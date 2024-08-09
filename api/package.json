@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "author": "MuenYU",
+  "license": "ISC",
+  "description": "api for video compression/transcoding",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4"
+  }
+}
