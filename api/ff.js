@@ -15,6 +15,9 @@ cmd
   .on("start", () => {
     console.log("Compression started.");
   })
+  .on("progress", (progress)=>{
+    console.log(`progress: ${progress.percent}`)
+  })
   .on("end", () => {
     console.log("Compression finished.");
   })
