@@ -27,7 +27,8 @@ dist-ssr
 test.sql
 
 # local attachment upload
-api/files
+api/upload
+api/output
 
 # env files
 .env.dev
