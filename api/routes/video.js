@@ -1,7 +1,10 @@
 import express from "express";
 import fileUpload from "express-fileupload";
 import CheckCredential from "../middleware/auth.js";
-import { upload } from "../controller/videoController.js";
+import {
+  upload,
+  list,
+} from "../controller/videoController.js";
 
 const router = express.Router();
 router.use(CheckCredential);
@@ -21,7 +24,7 @@ router.put("/upload", upload);
 /**
  * List user's video
  */
-router.get("/list", (req, res) => {});
+router.get("/list/:status(uploaded|compressed)", list);
 
 /**
  * Video delete
