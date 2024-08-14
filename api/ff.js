@@ -1,10 +1,10 @@
 import Ffmpeg from "fluent-ffmpeg";
 
 const input = `${process.env.UPLOAD_PATH}\\sample.mp4`
-const output = `${process.env.UPLOAD_PATH}\\output.mp4`
+const output = `${process.env.OUTPUT_PATH}\\output.mp4`
 const cmd = Ffmpeg();
 
-cmd
+const task = cmd
   .input(input)
   .videoCodec("libx265") // Set the video codec
   .audioCodec("libmp3lame") // Set the audio codec
@@ -26,3 +26,7 @@ cmd
     console.error("Error during compression:", err);
   })
   .save(output);
+
+setTimeout(()=>{
+  task.kill()
+},2000)
