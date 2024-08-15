@@ -30,8 +30,8 @@ app.use(cors());
 app.use(express.json());
 
 // routers
-app.use("/user", user);
-app.use("/video", video);
+app.use("/users", user);
+app.use("/videos", video);
 
 // general error handlement
 app.use(errHandler);

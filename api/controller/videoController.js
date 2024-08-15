@@ -3,6 +3,9 @@ import { errBuilder } from "../middleware/err.js";
 import path from "path";
 import Video from "../model/video.js";
 
+const uploadPath = process.env.UPLOAD_PATH;
+const outputPath = process.env.OUTPUT_PATH;
+
 export const upload = asyncHandler((req, res) => {
   // check if file is uploaded
   if (!req.files || Object.keys(req.files).length === 0) {
@@ -33,10 +36,26 @@ export const upload = asyncHandler((req, res) => {
  */
 export const list = asyncHandler(async (req, res) => {
   const username = req.username;
-  const status = req.params.status;
-  const data = await Video.find({
+  const { status } = req.query;
+  const filter = {
     owner: username,
-    isCompressed: status === "compressed",
-  });
+  };
+  if (status) filter.isCompressed = status === "compressed";
+  const data = await Video.find(filter);
   res.json({ data: data });
+});
+
+/**
+ * remove the specific video record in database
+ */
+export const remove = asyncHandler(async (req, res) => {
+  const username = req.username;
+  const id = req.params.id;
+  const result = await Video.deleteOne({
+    _id: id,
+    owner: username,
+  });
+  if (result.deletedCount === 0)
+    errBuilder(403, "you are not allowed to remove the resource");
+  res.json({ msg: "remove success" });
 });

@@ -4,6 +4,7 @@ import CheckCredential from "../middleware/auth.js";
 import {
   upload,
   list,
+  remove,
 } from "../controller/videoController.js";
 
 const router = express.Router();
@@ -19,16 +20,16 @@ router.use(
 /**
  * Video upload
  */
-router.put("/upload", upload);
+router.post("/upload", upload);
 
 /**
  * List user's video
  */
-router.get("/list/:status(uploaded|compressed)", list);
+router.get("/", list);
 
 /**
  * Video delete
  */
-router.delete("/:id", (req, res) => {});
+router.delete("/:id", remove);
 
 export default router;
