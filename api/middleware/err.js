@@ -6,7 +6,7 @@ class CustomErr extends Error {
 }
 
 export const errHandler = (err, req, res, next) => {
-  const statusCode = err.status ?? 500; // Use custom status code or default to 500
+  const statusCode = err.code ?? 500; // Use custom status code or default to 500
   console.error(err.message);
   res.status(statusCode).json({ msg: err.message });
 };

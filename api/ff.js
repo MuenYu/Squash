@@ -16,7 +16,7 @@ const task = cmd
     console.log("Compression started.");
   })
   .on("progress", (progress)=>{
-    if (isNaN(progress.isNaN))
+    if (!isNaN(progress.percent))
       console.log(`${Math.floor(progress.percent)}%`)
   })
   .on("end", () => {

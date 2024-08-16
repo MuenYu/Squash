@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { errBuilder } from "../middleware/err.js";
 import path from "path";
 import Video from "../model/video.js";
+import Ffmpeg from "fluent-ffmpeg";
 
 const uploadPath = process.env.UPLOAD_PATH;
 const outputPath = process.env.OUTPUT_PATH;
@@ -50,12 +51,43 @@ export const list = asyncHandler(async (req, res) => {
  */
 export const remove = asyncHandler(async (req, res) => {
   const username = req.username;
-  const id = req.params.id;
+  const fileName = req.params.fileName;
   const result = await Video.deleteOne({
-    _id: id,
+    file_name: fileName,
     owner: username,
   });
   if (result.deletedCount === 0)
     errBuilder(403, "you are not allowed to remove the resource");
   res.json({ msg: "remove success" });
+});
+
+export const compress = asyncHandler(async (req, res) => {
+  const { fileName, level } = req.body;
+  if (!fileName || !level) errBuilder(400, "no video id or compress level");
+  const filter = { file_name: fileName, isCompressed: false };
+  if (!(await Video.exists(filter)))
+    errBuilder(404, "the video to compress does not exist");
+  const input = path.join(uploadPath, fileName);
+  const output = path.join(outputPath, `compressed-level${level}-${fileName}`);
+  Ffmpeg()
+    .input(input)
+    .videoCodec("libx265") // Set the video codec
+    .audioCodec("libmp3lame") // Set the audio codec
+    .outputOptions([
+      `-crf ${level}`, // Constant Rate Factor (higher is more compression)
+      "-preset veryfast", // Encoding speed vs compression tradeoff
+    ])
+    .on("progress", (progress)=>{
+      if (!isNaN(progress.percent))
+        console.log(`${Math.floor(progress.percent)}%`)
+    })
+    .on("end", () => {
+      console.log("Compression finished.");
+      return res.json({ msg: `${fileName}` });
+    })
+    .on("error", (err) => {
+      console.error("Error during compression:", err);
+      errBuilder(500, err.message);
+    })
+    .save(output);
 });
