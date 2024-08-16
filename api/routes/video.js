@@ -1,7 +1,13 @@
 import express from "express";
 import fileUpload from "express-fileupload";
 import CheckCredential from "../middleware/auth.js";
-import { upload, list, remove, compress } from "../controller/videoController.js";
+import {
+  upload,
+  list,
+  remove,
+  compress,
+  download
+} from "../controller/videoController.js";
 
 const router = express.Router();
 router.use(CheckCredential);
@@ -29,5 +35,7 @@ router.get("/", list);
 router.delete("/:fileName", remove);
 
 router.post("/compressions", compress);
+
+router.get("/:fileName", download);
 
 export default router;

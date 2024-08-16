@@ -62,32 +62,51 @@ export const remove = asyncHandler(async (req, res) => {
 });
 
 export const compress = asyncHandler(async (req, res) => {
+  const username = req.username;
   const { fileName, level } = req.body;
   if (!fileName || !level) errBuilder(400, "no video id or compress level");
   const filter = { file_name: fileName, isCompressed: false };
   if (!(await Video.exists(filter)))
     errBuilder(404, "the video to compress does not exist");
-  const input = path.join(uploadPath, fileName);
-  const output = path.join(outputPath, `compressed-level${level}-${fileName}`);
+  const compressedFileName = `compressed-level${level}-${fileName}`;
+
   Ffmpeg()
-    .input(input)
+    .input(path.join(uploadPath, fileName))
     .videoCodec("libx265") // Set the video codec
     .audioCodec("libmp3lame") // Set the audio codec
     .outputOptions([
       `-crf ${level}`, // Constant Rate Factor (higher is more compression)
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
-    .on("progress", (progress)=>{
+    .on("progress", (progress) => {
       if (!isNaN(progress.percent))
-        console.log(`${Math.floor(progress.percent)}%`)
+        console.log(`${Math.floor(progress.percent)}%`);
     })
-    .on("end", () => {
+    .on("end", async () => {
       console.log("Compression finished.");
-      return res.json({ msg: `${fileName}` });
+      const video = new Video({
+        file_name: compressedFileName,
+        owner: username,
+        isCompressed: true,
+      });
+      await video.save();
+      res.json({ msg: `${fileName}` });
     })
     .on("error", (err) => {
       console.error("Error during compression:", err);
       errBuilder(500, err.message);
     })
-    .save(output);
+    .save(path.join(outputPath, compressedFileName));
+});
+
+export const download = asyncHandler(async (req, res) => {
+  const filter = {
+    owner: req.username,
+    file_name: req.params.fileName,
+  };
+  if (!(await Video.exists(filter)))
+    errBuilder(404, "the video does not exist");
+  res.sendFile(path.join(outputPath, filter.file_name), (err) => {
+    if (err) errBuilder(err.status, err.message);
+  });
 });
