@@ -29,9 +29,9 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-base-100 p-8 rounded-lg shadow-md w-96">
-        <div className=" flex justify-evenly items-center mb-4">
+        <div className=" flex justify-center items-center mb-4">
           <img src={Logo} width={100} height={100} />
-          <h2 className="text-2xl font-bold text-center">Squash Login</h2>
+          <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-control">
