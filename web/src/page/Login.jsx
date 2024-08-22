@@ -1,30 +1,15 @@
-import React, { useState } from "react";
+import { useEffect } from "react";
 import Logo from "/logo.png";
+import { Form, useActionData } from "react-router-dom";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const actionData = useActionData();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const validationErrors = {};
-    if (!username.trim()) {
-      validationErrors.username = "Username is required";
+  useEffect(() => {
+    if (actionData?.error) {
+      alert(actionData.error);
     }
-    if (!password.trim()) {
-      validationErrors.password = "Password is required";
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    // If validation passes, proceed with login logic (e.g., API call)
-    console.log("Login successful!", { username, password });
-  };
+  }, [actionData]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
@@ -33,23 +18,17 @@ const LoginPage = () => {
           <img src={Logo} width={100} height={100} />
           <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
         </div>
-        <form onSubmit={handleSubmit}>
+        <Form method="post">
           <div className="form-control">
             <label className="label">
               <span className="label-text">Username</span>
             </label>
             <input
               type="text"
+              name="username"
               placeholder="Enter your username"
-              className={`input input-bordered ${
-                errors.username && "input-error"
-              }`}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className="input input-bordered"
             />
-            {errors.username && (
-              <span className="text-error text-xs">{errors.username}</span>
-            )}
           </div>
           <div className="form-control mt-4">
             <label className="label">
@@ -57,21 +36,15 @@ const LoginPage = () => {
             </label>
             <input
               type="password"
+              name="password"
               placeholder="Enter your password"
-              className={`input input-bordered ${
-                errors.password && "input-error"
-              }`}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              className="input input-bordered"
             />
-            {errors.password && (
-              <span className="text-error text-xs">{errors.password}</span>
-            )}
           </div>
           <button type="submit" className="btn btn-primary w-full mt-6">
             Login
           </button>
-        </form>
+        </Form>
       </div>
     </div>
   );

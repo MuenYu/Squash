@@ -9,13 +9,10 @@ const userList = new Map([
   ["user3", "user3"],
 ]);
 
-export const login = asyncHandler((req, res, next) => {
+export const login = asyncHandler((req, res) => {
   const { username, password } = req.body;
-  if (!userList.has(username)) {
-    errBuilder(401, "invalid username");
-  }
-  if (userList.get(username) !== password) {
-    errBuilder(401, "wrong password");
+  if (!userList.has(username) || userList.get(username) !== password) {
+    errBuilder(401, "Invalid username or password");
   }
   res.json({ token: GenJWT({ username: username }) });
 });
