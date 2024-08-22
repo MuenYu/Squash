@@ -11,7 +11,7 @@ const videos = [
   },
 ];
 
-const UploadedVideoList = () => {
+const UploadedVideoList = ({ step }) => {
   return (
     <>
       <h1 className="font-medium mb-2">Your uploaded videos:</h1>
@@ -40,7 +40,12 @@ const UploadedVideoList = () => {
                   )}
                 </td>
                 <td>
-                  <button className="btn btn-outline btn-primary btn-sm">Select</button>
+                  <button
+                    className="btn btn-outline btn-primary btn-sm"
+                    disabled={step !== 0}
+                  >
+                    Select
+                  </button>
                 </td>
               </tr>
             ))}
