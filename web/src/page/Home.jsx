@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Steps from "../components/Steps";
 import UploadedVideoList from "../components/UploadedVideoList";
 import CompressedVideoList from "../components/CompressedVideoList";
+import SettingForm from "../components/SettingForm";
 
 const HomePage = () => {
   const [step, setStep] = useState(0);
@@ -17,21 +18,16 @@ const HomePage = () => {
             <Steps step={step} />
           </div>
           {/* File Upload Area */}
-          <div className="mb-6">
-            <label className="block font-medium mb-2">Upload your video:</label>
-            <input
-              type="file"
-              accept="video/*"
-              className="file-input file-input-bordered file-input-primary w-full"
-            />
+          <div className="mb-6 flex flex-col items-center">
+            <SettingForm />
           </div>
         </div>
 
         <div className="grid grid-cols-2 lg:gap-6">
-          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6">
+          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
             <UploadedVideoList />
           </div>
-          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6">
+          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
             <CompressedVideoList />
           </div>
         </div>
