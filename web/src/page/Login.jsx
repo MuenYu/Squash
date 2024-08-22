@@ -27,7 +27,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="bg-base-100 p-8 rounded-lg shadow-md w-96">
         <div className=" flex justify-center items-center mb-4">
           <img src={Logo} width={100} height={100} />

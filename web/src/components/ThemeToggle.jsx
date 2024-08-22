@@ -23,10 +23,8 @@ const ThemeToggle = () => {
       onClick={toggleTheme}
     >
       {isDarkMode ? (
-        // <span className="material-icons">dark_mode</span>
         <IconMoon stroke={2} />
       ) : (
-        // <span className="material-icons"></span>
         <IconSun stroke={2} />
       )}
     </button>
