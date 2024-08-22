@@ -4,9 +4,10 @@ import Steps from "../components/Steps";
 import UploadedVideoList from "../components/UploadedVideoList";
 import CompressedVideoList from "../components/CompressedVideoList";
 import SettingForm from "../components/SettingForm";
+import Progress from "../components/Progress";
 
 const HomePage = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -19,7 +20,8 @@ const HomePage = () => {
           </div>
           {/* File Upload Area */}
           <div className="mb-6 flex flex-col items-center">
-            <SettingForm />
+            {step === 0 && <SettingForm />}
+            {step === 1 && <Progress />}
           </div>
         </div>
 
