@@ -2,9 +2,7 @@ import express from "express";
 import fileUpload from "express-fileupload";
 import CheckCredential from "../middleware/auth.js";
 import {
-  upload,
   list,
-  remove,
   compress,
   download
 } from "../controller/videoController.js";
@@ -20,21 +18,11 @@ router.use(
 );
 
 /**
- * Video upload
- */
-router.post("/upload", upload);
-
-/**
  * List user's video
  */
 router.get("/", list);
 
-/**
- * Video delete
- */
-router.delete("/:fileName", remove);
-
-router.post("/compressions", compress);
+router.post("/compress", compress);
 
 router.get("/:fileName", download);
 

@@ -4,7 +4,7 @@ import LoginPage from "./page/Login";
 import HomePage from "./page/Home";
 import NotFoundPage from "./page/NotFound";
 import { homeLoader, loginLoader } from "./api/loader";
-import { loginAction } from "./api/action";
+import { loginAction, initTaskAction } from "./api/action";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +15,7 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
         loader: homeLoader,
+        action: initTaskAction,
       },
       {
         path: "login",

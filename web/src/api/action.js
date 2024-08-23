@@ -21,3 +21,18 @@ export async function loginAction({ request }) {
   localStorage.setItem(authKey, respData.token);
   return redirect("/");
 }
+
+export async function initTaskAction({ request }) {
+  const formData = await request.formData();
+  const videoFile = formData.get("videoFile");
+
+  if (videoFile?.size === 0)
+    return { error: `Please upload a video to compress` };
+  if (videoFile.size >= 52428800)
+    return { error: `Please upload a video no longer than 50 MB` };
+
+  const resp = await client.post("videos/compress", {
+    body: formData,
+  });
+  return null;
+}
