@@ -8,7 +8,7 @@ import Progress from "../components/Progress";
 import CompressionResult from "../components/CompressionResult";
 
 const HomePage = () => {
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -27,13 +27,8 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:gap-6">
-          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
-            <UploadedVideoList step={step} />
-          </div>
-          <div className="col-span-full lg:col-span-1 shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
-            <CompressedVideoList />
-          </div>
+        <div className="shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
+          <CompressedVideoList />
         </div>
       </main>
     </div>
