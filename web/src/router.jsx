@@ -8,6 +8,7 @@ import { authKey } from "./api/const";
 import SettingForm from "./components/SettingForm";
 import Progress from "./components/Progress";
 import CompressionResult from "./components/CompressionResult";
+import { fetchCompressedVideoList } from "./api/requests";
 
 const ProtectedRoute = ({ Component }) => {
   const token = localStorage.getItem(authKey);
@@ -22,20 +23,22 @@ const router = createBrowserRouter([
       {
         path: "panel",
         element: <ProtectedRoute Component={HomePage} />,
+        loader: fetchCompressedVideoList,
         children: [
           {
             index: true,
-            element: <SettingForm />
+            element: <SettingForm />,
           },
           {
-            path: 'compressing',
-            element: <Progress />
+            path: "compressing",
+            element: <Progress />,
           },
           {
-            path: 'complete',
-            element: <CompressionResult />
-          }
-        ]
+            path: "complete",
+            element: <CompressionResult />,
+            loader: fetchCompressedVideoList,
+          },
+        ],
       },
       {
         path: "login",

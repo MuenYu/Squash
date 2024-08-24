@@ -18,9 +18,6 @@ router.use(
   })
 );
 
-/**
- * List user's video
- */
 router.get("/", list);
 
 router.post("/compress", compress);

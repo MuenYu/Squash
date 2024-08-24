@@ -17,7 +17,7 @@ export const list = asyncHandler(async (req, res) => {
   const filter = {
     owner: username,
   };
-  const data = await Video.find(filter);
+  const data = await Video.find(filter).sort({create_time:-1});
   res.json({ data: data });
 });
 

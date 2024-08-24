@@ -39,3 +39,21 @@ export async function fetchProgress(taskId) {
   }
   return respData.progress;
 }
+
+export async function fetchCompressedVideoList() {
+  const resp = await client.get("videos");
+  const respData = await resp.json();
+  if (!resp.ok) {
+    throw new Error(respData.msg);
+  }
+  return respData.data;
+}
+
+export async function videoDownload(fileName) {
+  const resp = await client.get(`videos/${fileName}`)
+  if (!resp.ok) {
+    const respData = await resp.json();
+    throw new Error(respData.msg)
+  }
+  return await resp.blob()
+}
