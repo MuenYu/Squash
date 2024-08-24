@@ -17,7 +17,6 @@ export async function loginAction({ request }) {
   if (!resp.ok) {
     return { error: `${respData.msg}` };
   }
-
   localStorage.setItem(authKey, respData.token);
   return redirect("/");
 }
@@ -34,5 +33,9 @@ export async function initTaskAction({ request }) {
   const resp = await client.post("videos/compress", {
     body: formData,
   });
-  return null;
+  const respData = await resp.json();
+  if (!resp.ok) {
+    return {error: `${respData.msg}`}
+  }
+  return {taskId: `${respData.msg}`};
 }

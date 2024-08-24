@@ -3,8 +3,18 @@ import App from "./App";
 import LoginPage from "./page/Login";
 import HomePage from "./page/Home";
 import NotFoundPage from "./page/NotFound";
-import { homeLoader, loginLoader } from "./api/loader";
-import { loginAction, initTaskAction } from "./api/action";
+import { Navigate } from "react-router-dom";
+import { authKey } from "./api/const";
+
+const ProtectedRoute = ({ Component }) => {
+  const token = localStorage.getItem(authKey);
+  return token ? <Component /> : <Navigate to="/login" />;
+};
+
+const PublicRoute = ({ Component }) => {
+  const token = localStorage.getItem(authKey);
+  return token ? <Navigate to="/" /> : <Component />;
+};
 
 const router = createBrowserRouter([
   {
@@ -13,15 +23,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
-        loader: homeLoader,
-        action: initTaskAction,
+        element: <ProtectedRoute Component={HomePage} />,
       },
       {
         path: "login",
-        element: <LoginPage />,
-        loader: loginLoader,
-        action: loginAction,
+        element: <PublicRoute Component={LoginPage} />,
       },
       {
         path: "*",

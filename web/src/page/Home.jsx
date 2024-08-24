@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Steps from "../components/Steps";
-import UploadedVideoList from "../components/UploadedVideoList";
 import CompressedVideoList from "../components/CompressedVideoList";
 import SettingForm from "../components/SettingForm";
 import Progress from "../components/Progress";
@@ -9,6 +8,7 @@ import CompressionResult from "../components/CompressionResult";
 
 const HomePage = () => {
   const [step, setStep] = useState(0);
+  const [taskId, setTaskId] = useState(null);
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -21,9 +21,13 @@ const HomePage = () => {
           </div>
           {/* File Upload Area */}
           <div className="mb-6 flex flex-col items-center">
-            {step === 0 && <SettingForm />}
-            {step === 1 && <Progress />}
-            {step >= 2 && <CompressionResult />}
+            {step === 0 && (
+              <SettingForm setStep={setStep} setTaskId={setTaskId} />
+            )}
+            {step === 1 && <Progress taskId={taskId} setStep={setStep} />}
+            {step >= 2 && (
+              <CompressionResult setStep={setStep} setTaskId={setTaskId} />
+            )}
           </div>
         </div>
 

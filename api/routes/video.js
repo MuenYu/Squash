@@ -4,7 +4,8 @@ import CheckCredential from "../middleware/auth.js";
 import {
   list,
   compress,
-  download
+  download,
+  progress
 } from "../controller/videoController.js";
 
 const router = express.Router();
@@ -23,6 +24,8 @@ router.use(
 router.get("/", list);
 
 router.post("/compress", compress);
+
+router.get("/progress/:taskId", progress)
 
 router.get("/:fileName", download);
 

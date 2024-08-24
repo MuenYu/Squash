@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
+import { progressLoader } from "../api/loader";
 
-const Progress = () => {
+const Progress = ({ taskId, setStep }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        // Ensure progress does not exceed 100%
-        if (prevProgress >= 100) {
-          clearInterval(interval); // Clear interval if progress is 100%
-          return 100;
+    const interval = setInterval(async () => {
+      try {
+        const p = await progressLoader(taskId)
+        if (p >= 100) {
+          setStep(2);
         }
-        return prevProgress + 10;
-      });
+      } catch(err) {
+        clearInterval(interval);
+        alert(err.message);
+        setStep(0);
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, []);

@@ -1,15 +1,25 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import Logo from "/logo.png";
-import { Form, useActionData } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api/requests";
 
 const LoginPage = () => {
-  const actionData = useActionData();
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (actionData?.error) {
-      alert(actionData.error);
-    }
-  }, [actionData]);
+  const onSubmit = (e) => {
+    e.preventDefault();
+    login(formData)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
@@ -18,7 +28,7 @@ const LoginPage = () => {
           <img src={Logo} width={100} height={100} />
           <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
         </div>
-        <Form method="post">
+        <form onSubmit={onSubmit} method="post">
           <div className="form-control">
             <label className="label">
               <span className="label-text">Username</span>
@@ -28,6 +38,7 @@ const LoginPage = () => {
               name="username"
               placeholder="Enter your username"
               className="input input-bordered"
+              onChange={onChange}
             />
           </div>
           <div className="form-control mt-4">
@@ -39,12 +50,13 @@ const LoginPage = () => {
               name="password"
               placeholder="Enter your password"
               className="input input-bordered"
+              onChange={onChange}
             />
           </div>
           <button type="submit" className="btn btn-primary w-full mt-6">
             Login
           </button>
-        </Form>
+        </form>
       </div>
     </div>
   );

@@ -3,22 +3,31 @@ import { errBuilder } from "../middleware/err.js";
 import path from "path";
 import Video from "../model/video.js";
 import Ffmpeg from "fluent-ffmpeg";
+import { v4 as uuidv4 } from "uuid";
 
 const uploadPath = process.env.UPLOAD_PATH;
 const outputPath = process.env.OUTPUT_PATH;
+const taskMap = new Map();
 
 /**
  * List all videos of the user that are uploaded/compressed
  */
 export const list = asyncHandler(async (req, res) => {
   const username = req.username;
-  const { status } = req.query;
   const filter = {
     owner: username,
   };
-  if (status) filter.isCompressed = status === "compressed";
   const data = await Video.find(filter);
   res.json({ data: data });
+});
+
+export const progress = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId;
+  if (!taskMap.has(taskId))
+    errBuilder(404, "The compression task does not exist");
+  const progress = taskMap.get(taskId);
+  if (progress >= 100) taskMap.delete(taskId);
+  return res.json({ msg: progress });
 });
 
 export const compress = asyncHandler(async (req, res) => {
@@ -38,7 +47,8 @@ export const compress = asyncHandler(async (req, res) => {
     }
   );
   // start compression
-  
+  const compressedFileName = `compressed-${level}-${newFileName}`;
+  const taskId = uuidv4();
   Ffmpeg()
     .input(path.join(uploadPath, newFileName))
     .videoCodec("libx265") // Set the video codec
@@ -47,30 +57,29 @@ export const compress = asyncHandler(async (req, res) => {
       `-crf ${level}`, // Constant Rate Factor (higher is more compression)
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
-    .on("start", (progress)=> {
-
+    .on("start", () => {
+      res.json({ msg: taskId });
     })
     .on("progress", (progress) => {
       if (!isNaN(progress.percent))
-        console.log(`${Math.floor(progress.percent)}%`);
+        taskMap.set(taskId, Math.floor(progress.percent));
     })
     .on("end", async () => {
-      console.log("Compression finished.");
       const video = new Video({
-        file_name: compressedFileName,
+        original_name: file.name,
         owner: username,
-        isCompressed: true,
+        compression_level:
+          level <= 28 ? "Low" : level <= 38 ? "Medium" : "High",
+        file_name: compressedFileName,
       });
       await video.save();
-      res.json({ msg: `${fileName}` });
+      taskMap.set(taskId, 100);
     })
     .on("error", (err) => {
       console.error("Error during compression:", err);
       errBuilder(500, err.message);
     })
     .save(path.join(outputPath, compressedFileName));
-
-  return res.json("ok");
 });
 
 export const download = asyncHandler(async (req, res) => {

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const VideoSchema = new Schema({
-  file_name: {
+  original_name: {
     type: String,
     required: true,
   },
@@ -15,10 +15,13 @@ const VideoSchema = new Schema({
     type: String,
     required: true,
   },
-  isCompressed: {
-    type: Boolean,
+  compression_level: {
+    type: String,
     required: true,
-    default: false
+  },
+  file_name: {
+    type: String,
+    required: true
   }
 });
 
