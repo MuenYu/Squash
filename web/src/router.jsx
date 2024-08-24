@@ -9,6 +9,7 @@ import SettingForm from "./components/SettingForm";
 import Progress from "./components/Progress";
 import CompressionResult from "./components/CompressionResult";
 import { fetchCompressedVideoList } from "./api/requests";
+import IntroPage from "./page/Intro";
 
 const ProtectedRoute = ({ Component }) => {
   const token = localStorage.getItem(authKey);
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
       },
       {
         index: true,
-        element: <NotFoundPage />,
+        element: <IntroPage />,
       },
       {
         path: "*",

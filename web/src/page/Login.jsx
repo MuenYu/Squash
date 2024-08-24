@@ -1,5 +1,5 @@
 import Logo from "/logo.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/requests";
 
 const LoginPage = () => {
@@ -20,10 +20,12 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="bg-base-100 p-8 rounded-lg shadow-md w-96">
-        <div className=" flex justify-center items-center mb-4">
-          <img src={Logo} width={100} height={100} />
-          <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
-        </div>
+        <Link to='/'>
+          <div className=" flex justify-center items-center mb-4">
+            <img src={Logo} width={100} height={100} />
+            <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
+          </div>
+        </Link>
         <form onSubmit={onSubmit} method="post">
           <div className="form-control">
             <label className="label">
