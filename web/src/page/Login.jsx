@@ -11,7 +11,7 @@ const LoginPage = () => {
     e.preventDefault();
     login(formData)
       .then(() => {
-        navigate("/");
+        navigate("/panel");
       })
       .catch((err) => {
         alert(err.message);

@@ -1,7 +1,17 @@
-const CompressionResult = ({ setStep, setTaskId }) => {
+import { useEffect } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+
+const CompressionResult = () => {
+  const { setStep, taskId, setTaskId } = useOutletContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!taskId) navigate("/panel");
+    setStep(2);
+  }, []);
   const handleReset = () => {
-    setStep(0);
     setTaskId(null);
+    navigate("/panel");
   };
 
   return (

@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "../components/Header";
 import Steps from "../components/Steps";
 import CompressedVideoList from "../components/CompressedVideoList";
-import SettingForm from "../components/SettingForm";
-import Progress from "../components/Progress";
-import CompressionResult from "../components/CompressionResult";
+import { Outlet } from "react-router-dom";
 
 const HomePage = () => {
   const [step, setStep] = useState(0);
@@ -21,13 +19,7 @@ const HomePage = () => {
           </div>
           {/* File Upload Area */}
           <div className="mb-6 flex flex-col items-center">
-            {step === 0 && (
-              <SettingForm setStep={setStep} setTaskId={setTaskId} />
-            )}
-            {step === 1 && <Progress taskId={taskId} setStep={setStep} />}
-            {step >= 2 && (
-              <CompressionResult setStep={setStep} setTaskId={setTaskId} />
-            )}
+            <Outlet context={{ step, setStep, taskId, setTaskId }} />
           </div>
         </div>
 

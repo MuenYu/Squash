@@ -1,19 +1,13 @@
 import { IconSend } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { Form, useActionData } from "react-router-dom";
+import { Form, useOutletContext } from "react-router-dom";
 
-const SettingForm = ({ setStep, setTaskId }) => {
-  const actionData = useActionData();
+const SettingForm = () => {
+  const { setStep, setTaskId } = useOutletContext();
 
   useEffect(() => {
-    if (actionData?.error) {
-      alert(actionData.error);
-    } else if (actionData?.taskId) {
-      const taskId = actionData.taskId;
-      setTaskId(taskId);
-      setStep(1);
-    }
-  }, [actionData]);
+    setStep(0);
+  }, []);
 
   return (
     <Form
