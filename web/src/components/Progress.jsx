@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { progressLoader } from "../api/loader";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { fetchProgress } from "../api/requests";
 
 const Progress = () => {
   const [progress, setProgress] = useState(0);
@@ -10,17 +11,21 @@ const Progress = () => {
   useEffect(() => {
     if (!taskId) navigate("/panel");
     setStep(1);
-    const interval = setInterval(async () => {
-      try {
-        const p = await progressLoader(taskId);
-        if (p >= 100) {
-          setStep(2);
-        }
-      } catch (err) {
-        clearInterval(interval);
-        alert(err.message);
-        setStep(0);
-      }
+    const interval = setInterval(() => {
+      fetchProgress(taskId)
+        .then((p) => {
+          setProgress(p);
+          if (p >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              navigate("/panel/complete");
+            }, 1000);
+          }
+        })
+        .catch((err) => {
+          alert(err.message);
+          navigate("/panel");
+        });
     }, 1000);
     return () => clearInterval(interval);
   }, []);

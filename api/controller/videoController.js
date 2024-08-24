@@ -27,7 +27,7 @@ export const progress = asyncHandler(async (req, res) => {
     errBuilder(404, "The compression task does not exist");
   const progress = taskMap.get(taskId);
   if (progress >= 100) taskMap.delete(taskId);
-  return res.json({ msg: progress });
+  return res.json({ progress: progress });
 });
 
 export const compress = asyncHandler(async (req, res) => {
@@ -58,7 +58,7 @@ export const compress = asyncHandler(async (req, res) => {
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
     .on("start", () => {
-      res.json({ msg: taskId });
+      res.json({ taskId: taskId });
     })
     .on("progress", (progress) => {
       if (!isNaN(progress.percent))

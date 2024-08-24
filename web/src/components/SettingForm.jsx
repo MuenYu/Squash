@@ -1,19 +1,35 @@
 import { IconSend } from "@tabler/icons-react";
-import { useEffect } from "react";
-import { Form, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { initCompressionTask } from "../api/requests";
 
 const SettingForm = () => {
   const { setStep, setTaskId } = useOutletContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setStep(0);
   }, []);
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    initCompressionTask(formData)
+      .then((taskId) => {
+        setTaskId(taskId);
+        navigate("/panel/compressing");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+
   return (
-    <Form
+    <form
       method="post"
       encType="multipart/form-data"
       className="flex flex-col items-center gap-6"
+      onSubmit={onSubmit}
     >
       <fieldset className="flex gap-6 flex-col lg:flex-row items-center">
         <div>
@@ -57,7 +73,7 @@ const SettingForm = () => {
       <button className="btn btn-primary">
         <IconSend stroke={2} /> Squash it!
       </button>
-    </Form>
+    </form>
   );
 };
 

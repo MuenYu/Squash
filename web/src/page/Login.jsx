@@ -1,14 +1,13 @@
-import { useState } from "react";
 import Logo from "/logo.png";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/requests";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
   const navigate = useNavigate();
 
   const onSubmit = (e) => {
     e.preventDefault();
+    const formData = new FormData(e.target);
     login(formData)
       .then(() => {
         navigate("/panel");
@@ -16,9 +15,6 @@ const LoginPage = () => {
       .catch((err) => {
         alert(err.message);
       });
-  };
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -38,7 +34,6 @@ const LoginPage = () => {
               name="username"
               placeholder="Enter your username"
               className="input input-bordered"
-              onChange={onChange}
             />
           </div>
           <div className="form-control mt-4">
@@ -50,7 +45,6 @@ const LoginPage = () => {
               name="password"
               placeholder="Enter your password"
               className="input input-bordered"
-              onChange={onChange}
             />
           </div>
           <button type="submit" className="btn btn-primary w-full mt-6">
