@@ -57,6 +57,7 @@ export const compress = asyncHandler(async (req, res) => {
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
     .on("start", () => {
+      taskMap.set(taskId, 0)
       res.json({ taskId: taskId });
     })
     .on("progress", (progress) => {
