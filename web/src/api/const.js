@@ -6,6 +6,7 @@ const baseURL = import.meta.env.VITE_API ?? "/api";
 const client = ky.create({
   prefixUrl: baseURL,
   throwHttpErrors: false,
+  timeout: 120000,
   hooks: {
     beforeRequest: [
       (request) => {
