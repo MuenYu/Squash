@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { progressLoader } from "../api/loader";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { fetchProgress } from "../api/requests";
 

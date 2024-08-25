@@ -1,7 +1,7 @@
 import ky from "ky";
 
 const authKey = "auth";
-const baseURL = "http://localhost:3000/api";
+const baseURL = import.meta.env.VITE_API ?? "/api";
 
 const client = ky.create({
   prefixUrl: baseURL,

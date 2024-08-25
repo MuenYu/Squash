@@ -4,9 +4,8 @@ import path from "path";
 import Video from "../model/video.js";
 import Ffmpeg from "fluent-ffmpeg";
 import { v4 as uuidv4 } from "uuid";
+import { uploadPath, outputPath } from "../utils/path.js";
 
-const uploadPath = process.env.UPLOAD_PATH;
-const outputPath = process.env.OUTPUT_PATH;
 const taskMap = new Map();
 
 /**
@@ -17,7 +16,7 @@ export const list = asyncHandler(async (req, res) => {
   const filter = {
     owner: username,
   };
-  const data = await Video.find(filter).sort({create_time:-1});
+  const data = await Video.find(filter).sort({ create_time: -1 });
   res.json({ data: data });
 });
 
@@ -41,7 +40,7 @@ export const compress = asyncHandler(async (req, res) => {
   // save the file
   const newFileName = `${username}-${Date.now()}-${file.name}`;
   await file.mv(
-    path.join(process.env.UPLOAD_PATH, newFileName),
+    path.join(uploadPath, newFileName),
     async (err) => {
       if (err) throw err;
     }

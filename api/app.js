@@ -1,15 +1,19 @@
 import express from "express";
 import user from "./routes/user.js";
 import video from "./routes/video.js";
-import { createPathIfNotExist } from "./utils/path.js";
+import {
+  createPathIfNotExist,
+  uploadPath,
+  outputPath,
+  publicPath,
+} from "./utils/path.js";
 import cors from "cors";
 import { errHandler } from "./middleware/err.js";
 import mongoose from "mongoose";
+import path from "path";
 
 // app conf
 const port = process.env.PORT || 3000;
-const uploadPath = process.env.UPLOAD_PATH;
-const outputPath = process.env.OUTPUT_PATH;
 const mongoDB = process.env.MONGODB_URI;
 
 // create folders for upload and output if not exist
@@ -28,10 +32,14 @@ try {
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(publicPath));
 
 // routers
 app.use("/api/users", user);
 app.use("/api/videos", video);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
+});
 
 // general error handlement
 app.use(errHandler);
