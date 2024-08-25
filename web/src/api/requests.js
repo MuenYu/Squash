@@ -1,4 +1,5 @@
 import { authKey, client } from "./const";
+import { redirect } from "react-router-dom";
 
 export async function login(formData) {
   const username = formData.get("username").trim();
@@ -16,7 +17,15 @@ export async function login(formData) {
   return localStorage.setItem(authKey, respData.token);
 }
 
-export async function initCompressionTask(formData) {
+function useAuthCheck(apiFunc) {
+  return async function (...args) {
+    const token = localStorage.getItem(authKey);
+    if (!token) return redirect("/login");
+    return await apiFunc(...args);
+  };
+}
+
+async function initCompressionTaskAPI(formData) {
   const videoFile = formData.get("videoFile");
 
   if (videoFile?.size === 0)
@@ -30,8 +39,9 @@ export async function initCompressionTask(formData) {
   }
   return respData.taskId;
 }
+export const initCompressionTask = useAuthCheck(initCompressionTaskAPI);
 
-export async function fetchProgress(taskId) {
+async function fetchProgressAPI(taskId) {
   const resp = await client.get(`videos/progress/${taskId}`);
   const respData = await resp.json();
   if (!resp.ok) {
@@ -39,8 +49,9 @@ export async function fetchProgress(taskId) {
   }
   return respData.progress;
 }
+export const fetchProgress = useAuthCheck(fetchProgressAPI);
 
-export async function fetchCompressedVideoList() {
+async function fetchCompressedVideoListAPI() {
   const resp = await client.get("videos");
   const respData = await resp.json();
   if (!resp.ok) {
@@ -48,12 +59,16 @@ export async function fetchCompressedVideoList() {
   }
   return respData.data;
 }
+export const fetchCompressedVideoList = useAuthCheck(
+  fetchCompressedVideoListAPI
+);
 
-export async function videoDownload(fileName) {
-  const resp = await client.get(`videos/${fileName}`)
+async function videoDownloadAPI(fileName) {
+  const resp = await client.get(`videos/${fileName}`);
   if (!resp.ok) {
     const respData = await resp.json();
-    throw new Error(respData.msg)
+    throw new Error(respData.msg);
   }
-  return await resp.blob()
+  return await resp.blob();
 }
+export const videoDownload = useAuthCheck(videoDownloadAPI);
