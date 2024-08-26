@@ -25,7 +25,7 @@ const CompressedVideoList = ({ videoList }) => {
           <thead>
             <tr>
               <th></th>
-              <th>Video Name</th>
+              <th>Source Video Name</th>
               <th>Compression Finished Time</th>
               <th>Compression Level</th>
               <th>Operation</th>
@@ -37,7 +37,7 @@ const CompressedVideoList = ({ videoList }) => {
               .map((video, index) => (
                 <tr key={index}>
                   <th>{index + 1}</th>
-                  <td>{video.file_name}</td>
+                  <td>{video.original_name}</td>
                   <td>
                     {new DateTime(video.create_time).toFormat(
                       "yyyy-MM-dd HH:mm"

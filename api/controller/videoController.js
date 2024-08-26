@@ -33,14 +33,18 @@ export const compress = asyncHandler(async (req, res) => {
   const username = req.username;
   const level = req.body.level;
   let videoName = req.body.videoName;
+  let originalName = ''
 
   if (!level) errBuilder(400, "bad request");
 
-  // if upload a new video
-  if (videoName?.length === 0) {
+  if (videoName?.length > 0) { // use existing video
+    const video = await Video.findOne({ file_name: videoName, compression_level: undefined })
+    originalName = video.original_name
+  } else if (req?.files?.videoFile) { // upload new video
     if (!req?.files?.videoFile) errBuilder(400, "bad request")
     const file = req.files.videoFile;
-    videoName = `${uuidv4()}-${file.name}`;
+    originalName = file.name;
+    videoName = `${username}-${Date.now()}-${originalName}`;
     // save the file to disk
     await file.mv(
       path.join(uploadPath, videoName),
@@ -49,11 +53,13 @@ export const compress = asyncHandler(async (req, res) => {
       }
     );
     const video = new Video({
-      original_name: file.name,
+      original_name: originalName,
       owner: username,
       file_name: videoName
     })
     await video.save();
+  } else {
+    errBuilder(400, "bad request");
   }
 
   // start compression
@@ -77,7 +83,7 @@ export const compress = asyncHandler(async (req, res) => {
     })
     .on("end", async () => {
       const video = new Video({
-        original_name: videoName,
+        original_name: originalName,
         owner: username,
         compression_level:
           level <= 28 ? "Low" : level <= 38 ? "Medium" : "High",
