@@ -24,7 +24,7 @@ async function login() {
 }
 
 // Function to upload the video and get taskID
-async function compressVideo(jwt) {
+async function compressVideoByFile(jwt) {
     try {
         const form = new FormData();
         form.append('videoFile', fs.createReadStream(videoFilePath));
@@ -37,7 +37,28 @@ async function compressVideo(jwt) {
             },
         });
 
-        return response.data.taskId;
+        return response.data;
+    } catch (error) {
+        console.error('Error uploading video:', error.message);
+        process.exit(1);
+    }
+}
+
+// Function to give file name and get taskID
+async function compressVideoByName(jwt, name) {
+    try {
+        const form = new FormData();
+        form.append('videoName', name);
+        form.append('level', compressionLevel);
+
+        const response = await axios.post(`${API_BASE_URL}/api/videos/compress`, form, {
+            headers: {
+                ...form.getHeaders(),
+                Authorization: `Bearer ${jwt}`,
+            },
+        });
+
+        return response.data;
     } catch (error) {
         console.error('Error uploading video:', error.message);
         process.exit(1);
@@ -67,16 +88,25 @@ async function main() {
         const jwt = await login();
         console.log('JWT obtained:', jwt);
 
+        let fileName = '';
         for (let i = 1; ; ++i) {
-            console.log(`Round ${i}: Uploading video...`);
-            const taskID = await compressVideo(jwt);
-            console.log(`Round ${i}: Video uploaded, task ID: ${taskID}`);
+            console.log(`Round ${i}:`);
 
+            let taskID = '';
+
+            if (i === 1) {
+                const data = await compressVideoByFile(jwt);
+                taskID = data.taskId
+                fileName = data.fileName
+            } else {
+                const data = await compressVideoByName(jwt, fileName)
+                taskID = data.taskId
+            }
             let progress = 0;
             while (progress < 100) {
                 progress = await checkProgress(jwt, taskID);
                 console.log(`Round ${i} Progress: ${progress}%`);
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
             console.log(`Round ${i} done!\n`);
         }
