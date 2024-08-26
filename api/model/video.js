@@ -17,7 +17,6 @@ const VideoSchema = new Schema({
   },
   compression_level: {
     type: String,
-    required: true,
   },
   file_name: {
     type: String,

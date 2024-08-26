@@ -21,7 +21,7 @@ const HomePage = () => {
           {/* File Upload Area */}
           <div className="mb-6 flex flex-col items-center">
             <Outlet
-              context={{ step, setStep, taskId, setTaskId, setVideoList }}
+              context={{ step, setStep, taskId, setTaskId, setVideoList, videoList }}
             />
           </div>
         </div>

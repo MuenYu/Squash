@@ -6,7 +6,7 @@ import NotFoundPage from "./page/NotFound";
 import SettingForm from "./components/SettingForm";
 import Progress from "./components/Progress";
 import CompressionResult from "./components/CompressionResult";
-import { fetchCompressedVideoList } from "./api/requests";
+import { fetchVideoList } from "./api/requests";
 import IntroPage from "./page/Intro";
 
 const router = createBrowserRouter([
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
       {
         path: "panel",
         element: <HomePage />,
-        loader: fetchCompressedVideoList,
+        loader: fetchVideoList,
         children: [
           {
             index: true,
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
           {
             path: "complete",
             element: <CompressionResult />,
-            loader: fetchCompressedVideoList,
+            loader: fetchVideoList,
           },
         ],
       },

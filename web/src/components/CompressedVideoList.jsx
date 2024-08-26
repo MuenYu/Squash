@@ -32,26 +32,30 @@ const CompressedVideoList = ({ videoList }) => {
             </tr>
           </thead>
           <tbody>
-            {videoList.map((video, index) => (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{video.original_name}</td>
-                <td>
-                  {new DateTime(video.create_time).toFormat("yyyy-MM-dd HH:mm")}
-                </td>
-                <td>{video.compression_level}</td>
-                <td>
-                  <button
-                    className="btn btn-outline btn-primary btn-sm"
-                    onClick={() => {
-                      download(video.file_name);
-                    }}
-                  >
-                    Download
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {videoList
+              .filter((item) => !!item.compression_level)
+              .map((video, index) => (
+                <tr key={index}>
+                  <th>{index + 1}</th>
+                  <td>{video.file_name}</td>
+                  <td>
+                    {new DateTime(video.create_time).toFormat(
+                      "yyyy-MM-dd HH:mm"
+                    )}
+                  </td>
+                  <td>{video.compression_level}</td>
+                  <td>
+                    <button
+                      className="btn btn-outline btn-primary btn-sm"
+                      onClick={() => {
+                        download(video.file_name);
+                      }}
+                    >
+                      Download
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       )}

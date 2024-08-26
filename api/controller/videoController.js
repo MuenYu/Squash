@@ -32,33 +32,44 @@ export const progress = asyncHandler(async (req, res) => {
 export const compress = asyncHandler(async (req, res) => {
   const username = req.username;
   const level = req.body.level;
-  // request check
-  if (!req?.files?.videoFile || !level) {
-    errBuilder(400, "bad request");
+  let videoName = req.body.videoName;
+
+  if (!level) errBuilder(400, "bad request");
+
+  // if upload a new video
+  if (videoName?.length === 0) {
+    if (!req?.files?.videoFile) errBuilder(400, "bad request")
+    const file = req.files.videoFile;
+    videoName = `${uuidv4()}-${file.name}`;
+    // save the file to disk
+    await file.mv(
+      path.join(uploadPath, videoName),
+      async (err) => {
+        if (err) throw err;
+      }
+    );
+    const video = new Video({
+      original_name: file.name,
+      owner: username,
+      file_name: videoName
+    })
+    await video.save();
   }
-  const file = req.files.videoFile;
-  // save the file
-  const newFileName = `${username}-${Date.now()}-${file.name}`;
-  await file.mv(
-    path.join(uploadPath, newFileName),
-    async (err) => {
-      if (err) throw err;
-    }
-  );
+
   // start compression
-  const compressedFileName = `compressed-${level}-${newFileName}`;
+  const compressedFileName = `${Date.now()}-${level}-${videoName}`;
   const taskId = uuidv4();
   Ffmpeg()
-    .input(path.join(uploadPath, newFileName))
+    .input(path.join(uploadPath, videoName))
     .videoCodec("libx265") // Set the video codec
     .audioCodec("libmp3lame") // Set the audio codec
     .outputOptions([
       `-crf ${level}`, // Constant Rate Factor (higher is more compression)
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
-    .on("start", () => {
+    .on("start", async () => {
       taskMap.set(taskId, 0)
-      res.json({ taskId: taskId });
+      res.json({ taskId: taskId, fileName: videoName });
     })
     .on("progress", (progress) => {
       if (!isNaN(progress.percent))
@@ -66,7 +77,7 @@ export const compress = asyncHandler(async (req, res) => {
     })
     .on("end", async () => {
       const video = new Video({
-        original_name: file.name,
+        original_name: videoName,
         owner: username,
         compression_level:
           level <= 28 ? "Low" : level <= 38 ? "Medium" : "High",

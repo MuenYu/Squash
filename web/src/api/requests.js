@@ -27,9 +27,10 @@ function useAuthCheck(apiFunc) {
 
 async function initCompressionTaskAPI(formData) {
   const videoFile = formData.get("videoFile");
+  const videoName = formData.get("videoName").trim();
 
-  if (videoFile?.size === 0)
-    throw new Error("Please upload a video to compress");
+  if (videoFile?.size === 0 && videoName?.length === 0)
+    throw new Error("Please upload or select a video to compress");
   const resp = await client.post("videos/compress", {
     body: formData,
   });
@@ -51,7 +52,7 @@ async function fetchProgressAPI(taskId) {
 }
 export const fetchProgress = useAuthCheck(fetchProgressAPI);
 
-async function fetchCompressedVideoListAPI() {
+async function fetchVideoListAPI() {
   const resp = await client.get("videos");
   const respData = await resp.json();
   if (!resp.ok) {
@@ -59,8 +60,8 @@ async function fetchCompressedVideoListAPI() {
   }
   return respData.data;
 }
-export const fetchCompressedVideoList = useAuthCheck(
-  fetchCompressedVideoListAPI
+export const fetchVideoList = useAuthCheck(
+  fetchVideoListAPI
 );
 
 async function videoDownloadAPI(fileName) {
