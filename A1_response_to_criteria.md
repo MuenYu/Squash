@@ -12,12 +12,12 @@ It can compress the video users uploaded and keep the compression history for di
 
 
 Core criteria
-------------------------------------------------
+------------------------------------------------ 
 
 ### Docker image
 
 - **ECR Repository name:** n11457571/assess1
-- **Video timestamp:**
+- **Video timestamp:** 0:05
 - **Relevant files:**
     - /Dockerfile
 
@@ -25,12 +25,12 @@ Core criteria
 ### Docker image running on EC2
 
 - **EC2 instance ID:** i-0b11695d6530ad679
-- **Video timestamp:**
+- **Video timestamp:** 0:20
 
 ### User login functionality
 
 - **One line description:** Hard-coded username/password in map. using JWTs for sessions.
-- **Video timestamp:**
+- **Video timestamp:** 0:26
 - **Relevant files:**
     - /api/controller/userController.js
     - /api/utils/jwt.js
@@ -38,7 +38,7 @@ Core criteria
 ### User dependent functionality
 
 - **One line description:** Show user compression history including source file, compression finished time, compression level and download link.
-- **Video timestamp:**
+- **Video timestamp:** 1:00
 - **Relevant files:**
     - /api/controller/videoController.js 14,21
 
@@ -46,7 +46,7 @@ Core criteria
 ### Web client
 
 - **One line description:** a react + react-router page with daisyui style
-- **Video timestamp:** 
+- **Video timestamp:** 1:15
 - **Relevant files:**
     - /web/
     - /api/app.js 35,42
@@ -54,7 +54,7 @@ Core criteria
 ### REST API
 
 - **One line description:** REST API with endpoints (as nouns) and HTTP methods (GET, POST), and appropriate status codes
-- **Video timestamp:** 
+- **Video timestamp:** 1:23
 - **Relevant files:**
     - /api/routes/
     - /api/controller/
@@ -66,7 +66,7 @@ Core criteria
 - **One line description:** Video files user uploaded and compressed
 - **Type:** Unstructured
 - **Rationale:** Videos are too large for database. No need for additional functionality
-- **Video timestamp:**
+- **Video timestamp:** 2:37
 - **Relevant files:**
     - /api/routes/video.js 14,24;28
     - /api/controller/videoController.js 49,53
@@ -78,7 +78,7 @@ Core criteria
 - **One line description:** user ownership of videos
 - **Type:** Structured, no ACID requirements
 - **Rationale:** Need to be able to query but no chance to modify
-- **Video timestamp:** 
+- **Video timestamp:** 2:52
 - **Relevant files:**
   - /api/routes/video.js 14,24;28
   - /api/controller/videoController.js 14,21;55,60;85,92;
@@ -86,7 +86,7 @@ Core criteria
 ### CPU intensive task
 
 - **One line description:** Video compression through ffmpeg
-- **Video timestamp:** 
+- **Video timestamp:** 3:05
 - **Relevant files:**
     - /api/routes/video.js 28
     - /api/controller/videoController.js 68,99
@@ -94,7 +94,7 @@ Core criteria
 ### CPU load testing method
 
 - **One line description:** sending request to init compression tasks through a JavaScript script
-- **Video timestamp:** 
+- **Video timestamp:** 3:33
 - **Relevant files:**
     - /runner/tester.js
     - /runner/sample_lg.mp4
@@ -106,7 +106,7 @@ Additional criteria
 ### Extensive REST API features
 
 - **One line description:** Fix CORS issue, so the api can be called through different clients
-- **Video timestamp:** 
+- **Video timestamp:** 4:18
 - **Relevant files:**
     - /api/app.js 33
 
@@ -122,7 +122,7 @@ Additional criteria
 ### Extensive web client features
 
 - **One line description:** react SPA with dark mode
-- **Video timestamp:**
+- **Video timestamp:** 4:36
 - **Relevant files:**
     - /web/components/ThemeToggle.jsx
 
@@ -154,7 +154,7 @@ Additional criteria
 ### Live progress indication
 
 - **One line description:** display the current progress through polling requests
-- **Video timestamp:** 
+- **Video timestamp:** 1:55
 - **Relevant files:**
     - /api/routers/video.js 30
     - /api/controllers/videoController 9;23,30
@@ -163,7 +163,7 @@ Additional criteria
 ### Infrastructure as code
 
 - **One line description:** I use docker-compose to deploy the project
-- **Video timestamp:** 
+- **Video timestamp:** 4:45
 - **Relevant files:**
     - /compose.yml
 
