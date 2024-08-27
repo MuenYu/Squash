@@ -6,7 +6,7 @@ import fs from 'fs';
 const API_BASE_URL = process.argv[2] ?? 'http://localhost:3000'; // Replace with your API base URL
 const username = 'user1';
 const password = 'user1';
-const videoFilePath = './sample.mp4'; // Replace with your video file path
+const videoFilePath = './sample_lg.mp4'; // Replace with your video file path
 const compressionLevel = 28;
 
 // Function to log in and retrieve JWT

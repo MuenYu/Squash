@@ -87,7 +87,7 @@ export const compress = asyncHandler(async (req, res) => {
         owner: username,
         compression_level:
           level <= 28 ? "Low" : level <= 38 ? "Medium" : "High",
-        file_name: compressedFileName,
+        file_name: compressedFileName,  
       });
       await video.save();
       taskMap.set(taskId, 100);

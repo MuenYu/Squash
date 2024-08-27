@@ -13,8 +13,6 @@ An online video compression platform, which allows user to upload their video, a
 - [x] user login (registration is not necessary)
 
 ### Additional
-- [x] get/post/put/delete APIs
-- [x] using an external API for data
 - [x] fancy web design
 - [ ] sophisticated visualisations of data
 - [ ] additional types of data
