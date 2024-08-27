@@ -11,6 +11,7 @@ import cors from "cors";
 import { errHandler } from "./middleware/err.js";
 import mongoose from "mongoose";
 import path from "path";
+import morgan from "morgan";
 
 // app conf
 const port = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ try {
 
 // global middlewares
 const app = express();
+app.use(morgan('tiny'))
 app.use(cors());
 app.use(express.json());
 app.use(express.static(publicPath));
