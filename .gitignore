@@ -32,5 +32,8 @@ api/upload
 api/output
 
 # env files
-.env.dev
-.env.prod
+.env
+.env.*
+
+# cert files
+global-bundle.pem

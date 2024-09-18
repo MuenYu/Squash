@@ -12,6 +12,7 @@ import { errHandler } from "./middleware/err.js";
 import mongoose from "mongoose";
 import path from "path";
 import morgan from "morgan";
+import { downloadCert } from "./utils/cert.js";
 
 // app conf
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ createPathIfNotExist(outputPath);
 
 // db connection
 try {
+  await downloadCert();
   await mongoose.connect(mongoDB);
 } catch (err) {
   console.error(`MongoDB connection err: ${err.message}`);
@@ -34,14 +36,14 @@ const app = express();
 app.use(morgan('tiny'))
 app.use(cors());
 app.use(express.json());
-app.use(express.static(publicPath));
+// app.use(express.static(publicPath));
 
 // routers
 app.use("/api/users", user);
 app.use("/api/videos", video);
-app.get("*", (req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(publicPath, "index.html"));
+// });
 
 // general error handlement
 app.use(errHandler);
