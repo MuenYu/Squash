@@ -9,14 +9,17 @@ import {
 } from "./utils/path.js";
 import cors from "cors";
 import { errHandler } from "./middleware/err.js";
-import mongoose from "mongoose";
 import path from "path";
 import morgan from "morgan";
-import { downloadCert } from "./utils/cert.js";
+
+import { connectMongo } from "./utils/mongo.js";
+import { getParameter } from "./utils/parameterstore.js";
+import { getSecret } from "./utils/secretmanager.js";
+
+await getSecret("mongodb");
 
 // app conf
-const port = process.env.PORT || 3000;
-const mongoDB = process.env.MONGODB_URI;
+const port = await getParameter(process.env.PARAMETER_STORE_PORT) || 3000;
 
 // create folders for upload and output if not exist
 createPathIfNotExist(uploadPath);
@@ -24,8 +27,7 @@ createPathIfNotExist(outputPath);
 
 // db connection
 try {
-  await downloadCert();
-  await mongoose.connect(mongoDB);
+  await connectMongo();
 } catch (err) {
   console.error(`MongoDB connection err: ${err.message}`);
   process.exit(1);
