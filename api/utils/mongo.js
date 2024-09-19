@@ -6,6 +6,6 @@ const key = "mongodb";
 
 export async function connectMongo() {
     await downloadCert();
-    let url = await getSecret(key);
+    const url = await getSecret(key);
     await mongoose.connect(url);
 }

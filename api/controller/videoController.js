@@ -5,8 +5,7 @@ import Video from "../model/video.js";
 import Ffmpeg from "fluent-ffmpeg";
 import { v4 as uuidv4 } from "uuid";
 import { uploadPath, outputPath } from "../utils/path.js";
-
-const taskMap = new Map();
+import { mClient } from "../utils/memcache.js";
 
 /**
  * List all videos of the user that are uploaded/compressed
@@ -22,10 +21,11 @@ export const list = asyncHandler(async (req, res) => {
 
 export const progress = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId;
-  if (!taskMap.has(taskId))
+  const data = await mClient.get(taskId)
+  if (!data)
     errBuilder(404, "The compression task does not exist");
-  const progress = taskMap.get(taskId);
-  if (progress >= 100) taskMap.delete(taskId);
+  const progress = data.value
+  if (progress >= 100) await mClient.delete(taskId);
   return res.json({ progress: progress });
 });
 
@@ -74,12 +74,12 @@ export const compress = asyncHandler(async (req, res) => {
       "-preset veryfast", // Encoding speed vs compression tradeoff
     ])
     .on("start", async () => {
-      taskMap.set(taskId, 0)
+      await mClient.set(taskId, 0)
       res.json({ taskId: taskId, fileName: videoName });
     })
-    .on("progress", (progress) => {
+    .on("progress", async (progress) => {
       if (!isNaN(progress.percent))
-        taskMap.set(taskId, Math.floor(progress.percent));
+        await mClient.set(taskId, Math.floor(progress.percent))
     })
     .on("end", async () => {
       const video = new Video({
@@ -90,10 +90,11 @@ export const compress = asyncHandler(async (req, res) => {
         file_name: compressedFileName,  
       });
       await video.save();
-      taskMap.set(taskId, 100);
+      await mClient.set(taskId, 100)
     })
-    .on("error", (err) => {
+    .on("error", async (err) => {
       console.error("Error during compression:", err);
+      await mClient.remove(taskId);
       errBuilder(500, err.message);
     })
     .save(path.join(outputPath, compressedFileName));

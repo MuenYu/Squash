@@ -15,6 +15,7 @@ import morgan from "morgan";
 import { connectMongo } from "./utils/mongo.js";
 import { getParameter } from "./utils/parameterstore.js";
 import { getSecret } from "./utils/secretmanager.js";
+import { connectMemcache } from "./utils/memcache.js";
 
 await getSecret("mongodb");
 
@@ -28,8 +29,9 @@ createPathIfNotExist(outputPath);
 // db connection
 try {
   await connectMongo();
+  await connectMemcache();
 } catch (err) {
-  console.error(`MongoDB connection err: ${err.message}`);
+  console.error(`Initial connection err: ${err.message}`);
   process.exit(1);
 }
 
