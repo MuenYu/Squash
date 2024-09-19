@@ -7,6 +7,7 @@ import {
   ConfirmSignUpCommand
 } from "@aws-sdk/client-cognito-identity-provider";
 
+// TODO: change the region to AU
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'ap-northeast-1' });
 const CLIENT_ID = '4pt7k3nbsrebnuvsq2fsna9hvh';
 

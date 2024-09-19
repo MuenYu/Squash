@@ -1,9 +1,13 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
+import { getSecret } from "../utils/secretmanager.js";
+
+const userPoolId = await getSecret('userPoolId')
+const clientId = await getSecret('clientId')
 
 const verifier = CognitoJwtVerifier.create({
-  userPoolId: 'ap-northeast-1_QVySlMzWC',
+  userPoolId: userPoolId,
   tokenUse: "id",
-  clientId: '4pt7k3nbsrebnuvsq2fsna9hvh'
+  clientId: clientId
 });
 
 export default async function CheckCredential(req, res, next) {
