@@ -1,15 +1,24 @@
-import { DecodeJWT } from "../utils/jwt.js";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-export default function CheckCredential(req, res, next) {
+const verifier = CognitoJwtVerifier.create({
+  userPoolId: 'ap-northeast-1_QVySlMzWC',
+  tokenUse: "id",
+  clientId: '4pt7k3nbsrebnuvsq2fsna9hvh'
+});
+
+export default async function CheckCredential(req, res, next) {
   const authHeader = req.headers.authorization;
-  // when no jwt token provided
+  
   if (!authHeader)
     return res.status(401).json({ msg: "No authentication token" });
+  
   const token = authHeader.split(" ")[1];
-  const data = DecodeJWT(token);
-  // when the signature of the token is not correct or expired
-  if (data instanceof Error)
-    res.status(401).json({ msg: `Invalid token: ${data.message}` });
-  req.username = data.username;
-  next();
+  
+  try {
+    const payload = await verifier.verify(token);
+    req.username = payload['cognito:username'];
+    next();
+  } catch (error) {
+    res.status(401).json({ msg: `Invalid token: ${error.message}` });
+  }
 }

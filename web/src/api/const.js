@@ -22,6 +22,8 @@ const client = ky.create({
       async (request, options, response) => {
         if (response.status === 401) {
           localStorage.removeItem(authKey);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
         }
       },
     ],

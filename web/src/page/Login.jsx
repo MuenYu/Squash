@@ -1,61 +1,156 @@
+import React, { useState } from 'react';
 import Logo from "/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../api/requests";
+import { login, register, confirmRegistration } from "../api/requests";
 
-const LoginPage = () => {
+const AuthPage = () => {
   const navigate = useNavigate();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    login(formData)
-      .then(() => {
+    
+    try {
+      console.log('Current state:', { isRegistering, isVerifying, username, verificationCode });
+      
+      if (isVerifying) {
+        console.log('Attempting to confirm registration');
+        if (!verificationCode) {
+          alert("Verification code is required.");
+          return;
+        }
+        await confirmRegistration(username, verificationCode);
+        setIsRegistering(false);
+        setIsVerifying(false);
+        alert("Email verified successfully. You can now log in.");
+        // Reset form fields after successful verification
+        setPassword('');
+        setEmail('');
+        setVerificationCode('');
+      } else if (isRegistering) {
+        console.log('Attempting to register');
+        await register({ username, password, email });
+        setIsVerifying(true);
+        alert("Registration successful. Please check your email for the verification code.");
+      } else {
+        console.log('Attempting to login');
+        await login({ username, password });
         navigate("/panel");
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+      }
+    } catch (err) {
+      console.error('Error in onSubmit:', err);
+      alert(err.message || "An error occurred. Please try again.");
+    }
+  };
+
+  const renderForm = () => {
+    if (isVerifying) {
+      return (
+        <form onSubmit={onSubmit}>
+          <p className="text-sm mb-4">Verifying account for: <strong>{username}</strong></p>
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">Verification Code</span>
+            </label>
+            <input
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder="Enter verification code"
+              className="input input-bordered"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-full mt-6">
+            Verify
+          </button>
+        </form>
+      );
+    }
+
+    return (
+      <form onSubmit={onSubmit}>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Username</span>
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username"
+            className="input input-bordered"
+            required
+          />
+        </div>
+        <div className="form-control mt-4">
+          <label className="label">
+            <span className="label-text">Password</span>
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            className="input input-bordered"
+            required
+          />
+        </div>
+        {isRegistering && (
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">Email</span>
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="input input-bordered"
+              required
+            />
+          </div>
+        )}
+        <button type="submit" className="btn btn-primary w-full mt-6">
+          {isRegistering ? 'Register' : 'Login'}
+        </button>
+      </form>
+    );
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="bg-base-100 p-8 rounded-lg shadow-md w-96">
         <Link to='/'>
-          <div className=" flex justify-center items-center mb-4">
-            <img src={Logo} width={100} height={100} />
-            <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
+          <div className="flex justify-center items-center mb-4">
+            <img src={Logo} width={100} height={100} alt="Logo" />
+            <h2 className="text-2xl font-bold text-center">
+              {isVerifying ? 'Verify Email' : (isRegistering ? 'Register' : 'Login')} to Squash
+            </h2>
           </div>
         </Link>
-        <form onSubmit={onSubmit} method="post">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Username</span>
-            </label>
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              className="input input-bordered"
-            />
-          </div>
-          <div className="form-control mt-4">
-            <label className="label">
-              <span className="label-text">Password</span>
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className="input input-bordered"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary w-full mt-6">
-            Login
+        {renderForm()}
+        {!isVerifying && (
+          <button
+            onClick={() => {
+              setIsRegistering(!isRegistering);
+              setUsername('');
+              setPassword('');
+              setEmail('');
+            }}
+            className="btn btn-link w-full mt-4"
+          >
+            {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
           </button>
-        </form>
+        )}
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default AuthPage;
