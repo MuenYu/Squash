@@ -1,15 +1,21 @@
 import asyncHandler from "express-async-handler";
 import { errBuilder } from "../middleware/err.js";
+import { getSecret } from "../utils/secretmanager.js";
 import { 
   CognitoIdentityProviderClient, 
   InitiateAuthCommand,
   SignUpCommand,
-  ConfirmSignUpCommand
+  ConfirmSignUpCommand,
+  AssociateSoftwareTokenCommand,
+  VerifySoftwareTokenCommand,
+  SetUserMFAPreferenceCommand,
+  RespondToAuthChallengeCommand
 } from "@aws-sdk/client-cognito-identity-provider";
 
-// TODO: change the region to AU
-const cognitoClient = new CognitoIdentityProviderClient({ region: 'ap-northeast-1' });
-const CLIENT_ID = '4pt7k3nbsrebnuvsq2fsna9hvh';
+
+const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
+const CLIENT_ID = await getSecret('clientId')
+
 
 export const register = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body;
@@ -67,14 +73,93 @@ export const login = asyncHandler(async (req, res) => {
 
     const response = await cognitoClient.send(command);
     
+    if (response.ChallengeName === 'SOFTWARE_TOKEN_MFA') {
+      // User has MFA enabled, return challenge
+      res.json({
+        challengeName: response.ChallengeName,
+        session: response.Session,
+      });
+    } else {
+      // No MFA, return tokens
+      const { IdToken, AccessToken, RefreshToken } = response.AuthenticationResult;
+      res.json({ 
+        idToken: IdToken,
+        accessToken: AccessToken,
+        refreshToken: RefreshToken,
+        mfaEnabled: false,
+      });
+    }
+  } catch (error) {
+    errBuilder(401, "Invalid username or password");
+  }
+});
+
+export const setupMFA = asyncHandler(async (req, res) => {
+  const { accessToken } = req.body;
+
+  try {
+    const command = new AssociateSoftwareTokenCommand({
+      AccessToken: accessToken,
+    });
+
+    const response = await cognitoClient.send(command);
+    res.json({ secretCode: response.SecretCode });
+  } catch (error) {
+    errBuilder(400, error.message);
+  }
+});
+
+export const verifyMFA = asyncHandler(async (req, res) => {
+  const { accessToken, userCode } = req.body;
+
+  try {
+    const verifyCommand = new VerifySoftwareTokenCommand({
+      AccessToken: accessToken,
+      UserCode: userCode,
+    });
+
+    await cognitoClient.send(verifyCommand);
+
+    const setMfaCommand = new SetUserMFAPreferenceCommand({
+      AccessToken: accessToken,
+      SoftwareTokenMfaSettings: {
+        Enabled: true,
+        PreferredMfa: true,
+      },
+    });
+
+    await cognitoClient.send(setMfaCommand);
+
+    res.json({ message: "MFA setup successful" });
+  } catch (error) {
+    errBuilder(400, error.message);
+  }
+});
+
+export const verifyMFAChallenge = asyncHandler(async (req, res) => {
+  const { username, session, mfaCode } = req.body;
+
+  try {
+    const command = new RespondToAuthChallengeCommand({
+      ClientId: CLIENT_ID,
+      ChallengeName: "SOFTWARE_TOKEN_MFA",
+      ChallengeResponses: {
+        USERNAME: username,
+        SOFTWARE_TOKEN_MFA_CODE: mfaCode,
+      },
+      Session: session,
+    });
+
+    const response = await cognitoClient.send(command);
     const { IdToken, AccessToken, RefreshToken } = response.AuthenticationResult;
 
     res.json({ 
       idToken: IdToken,
       accessToken: AccessToken,
-      refreshToken: RefreshToken
+      refreshToken: RefreshToken,
+      mfaEnabled: true,
     });
   } catch (error) {
-    errBuilder(401, "Invalid username or password");
+    errBuilder(401, "Invalid MFA code");
   }
 });
