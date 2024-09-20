@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { authKey } from "../api/const";
+import { authKey, accessToken, refreshToken } from "../api/const";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -14,6 +14,8 @@ const Header = () => {
         className="btn btn-secondary"
         onClick={() => {
           localStorage.removeItem(authKey);
+          localStorage.removeItem(accessToken);
+          localStorage.removeItem(refreshToken);
           navigate('/login')
         }}
       >

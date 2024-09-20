@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from "/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { login, register, confirmRegistration } from "../api/requests";
+import { login, register, confirmRegistration, verifyMFAChallenge } from "../api/requests";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -11,6 +11,9 @@ const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
+  const [requiresMFA, setRequiresMFA] = useState(false);
+  const [mfaSession, setMfaSession] = useState('');
+  const [mfaCode, setMfaCode] = useState('');
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +31,6 @@ const AuthPage = () => {
         setIsRegistering(false);
         setIsVerifying(false);
         alert("Email verified successfully. You can now log in.");
-        // Reset form fields after successful verification
         setPassword('');
         setEmail('');
         setVerificationCode('');
@@ -37,10 +39,21 @@ const AuthPage = () => {
         await register({ username, password, email });
         setIsVerifying(true);
         alert("Registration successful. Please check your email for the verification code.");
-      } else {
-        console.log('Attempting to login');
-        await login({ username, password });
+      } else if (requiresMFA) {
+        await verifyMFAChallenge({ username, session: mfaSession, mfaCode });
         navigate("/panel");
+      } else {
+        const result = await login({ username, password });
+        if (result.requiresMFA) {
+          setRequiresMFA(true);
+          setMfaSession(result.session);
+        } else {
+          if (!result.mfaEnabled) {
+            navigate("/mfa-setup");
+          } else {
+            navigate("/panel");
+          }
+        }
       }
     } catch (err) {
       console.error('Error in onSubmit:', err);
@@ -68,6 +81,29 @@ const AuthPage = () => {
           </div>
           <button type="submit" className="btn btn-primary w-full mt-6">
             Verify
+          </button>
+        </form>
+      );
+    }
+
+    if (requiresMFA) {
+      return (
+        <form onSubmit={onSubmit}>
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">MFA Code</span>
+            </label>
+            <input
+              type="text"
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value)}
+              placeholder="Enter MFA code"
+              className="input input-bordered"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-full mt-6">
+            Verify MFA
           </button>
         </form>
       );
