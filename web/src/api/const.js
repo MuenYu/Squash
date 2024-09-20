@@ -1,6 +1,8 @@
 import ky from "ky";
 
 const authKey = "auth";
+const accessToken = "accessToken";
+const refreshToken = "refreshToken";
 const baseURL = import.meta.env.VITE_API ?? "/api";
 
 const client = ky.create({
@@ -22,12 +24,12 @@ const client = ky.create({
       async (request, options, response) => {
         if (response.status === 401) {
           localStorage.removeItem(authKey);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
+          localStorage.removeItem(accessToken);
+          localStorage.removeItem(refreshToken);
         }
       },
     ],
   },
 });
 
-export { authKey, client };
+export { authKey, accessToken, refreshToken, client };

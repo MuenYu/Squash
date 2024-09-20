@@ -35,6 +35,7 @@ export async function confirmRegistration(username, code) {
   }
 }
 
+
 export async function login({ username, password }) {
   console.log('Logging in user:', { username });
   if (!username || !password) {
@@ -47,9 +48,14 @@ export async function login({ username, password }) {
   if (!resp.ok) {
     throw new Error(respData.msg || "Login failed");
   }
+  if (respData.challengeName === 'SOFTWARE_TOKEN_MFA') {
+    return { requiresMFA: true, session: respData.session, username };
+  }
   localStorage.setItem(authKey, respData.idToken);
   localStorage.setItem('accessToken', respData.accessToken);
   localStorage.setItem('refreshToken', respData.refreshToken);
+  localStorage.setItem('username', username); 
+  return { requiresMFA: false, mfaEnabled: respData.mfaEnabled };
 }
 
 function useAuthCheck(apiFunc) {
@@ -118,3 +124,37 @@ async function videoDownloadAPI(fileName) {
   return await resp.blob();
 }
 export const videoDownload = useAuthCheck(videoDownloadAPI);
+
+export async function setupMFA(accessToken) {
+  const resp = await client.post("users/setup-mfa", {
+    json: { accessToken },
+  });
+  const respData = await resp.json();
+  if (!resp.ok) {
+    throw new Error(respData.msg || "MFA setup failed");
+  }
+  return respData.secretCode;
+}
+
+export async function verifyMFA(accessToken, userCode) {
+  const resp = await client.post("users/verify-mfa", {
+    json: { accessToken, userCode },
+  });
+  if (!resp.ok) {
+    const respData = await resp.json();
+    throw new Error(respData.msg || "MFA verification failed");
+  }
+}
+
+export async function verifyMFAChallenge({ username, session, mfaCode }) {
+  const resp = await client.post("users/verify-mfa-challenge", {
+    json: { username, session, mfaCode },
+  });
+  const respData = await resp.json();
+  if (!resp.ok) {
+    throw new Error(respData.msg || "MFA verification failed");
+  }
+  localStorage.setItem(authKey, respData.idToken);
+  localStorage.setItem('accessToken', respData.accessToken);
+  localStorage.setItem('refreshToken', respData.refreshToken);
+}

@@ -8,6 +8,7 @@ import Progress from "./components/Progress";
 import CompressionResult from "./components/CompressionResult";
 import { fetchVideoList } from "./api/requests";
 import IntroPage from "./page/Intro";
+import MFASetupPage from "./page/MFASetup";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "mfa-setup",
+        element: <MFASetupPage />,
       },
       {
         index: true,
