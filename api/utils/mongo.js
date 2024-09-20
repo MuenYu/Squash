@@ -3,6 +3,7 @@ import { getSecret } from "./secretmanager.js";
 import fetch from 'node-fetch';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+import Video from "../model/video.js";
 
 const key = "mongodb";
 const certUrl = "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem";
@@ -41,5 +42,10 @@ async function downloadCert() {
             reject(err);
         });
     })
+}
 
+export async function resetMongo() {
+    await Video.collection.drop();
+    await mongoose.disconnect();
+    console.log("mongo reset success")
 }

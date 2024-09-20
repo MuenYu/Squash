@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon --env-file=.env.dev app.js",
     "start": "node --env-file=.env.dev app.js",
-    "ff": "node --env-file=.env.dev ff.js"
+    "ff": "node --env-file=.env.dev ff.js",
+    "dbreset": "node --env-file=.env.dev reset.js"
   },
   "author": "MuenYU",
   "license": "ISC",
