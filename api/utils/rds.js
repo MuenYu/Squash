@@ -6,7 +6,7 @@ const user = await getSecret("rdsUser")
 const password = await getSecret("rdsPass")
 const database = await getSecret("rdsDB")
 
-export const mysql = knex({
+export const rds = knex({
     client: 'mysql2', // Use 'mysql2' as the client for MySQL connections
     connection: {
         host: host,        // Replace with your DB host
@@ -19,11 +19,21 @@ export const mysql = knex({
 });
 
 export async function initRDS() {
-    if (mysql) {
-        await mysql.raw(initSQL);
+    if (rds) {
+        await rds.raw(initSQL);
         console.log('rds init success');
     } else {
         throw new Error("mysql init failed: no connection established")
+    }
+}
+
+export async function resetRDS() {
+    if (rds){
+        await rds.raw("drop table history;");
+        await rds.destroy();
+        console.log('rds reset success')
+    }else {
+        throw new Error("mysql reset failed: no connection established")
     }
 }
 
