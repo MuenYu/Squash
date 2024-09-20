@@ -16,6 +16,7 @@ import { connectMongo } from "./utils/mongo.js";
 import { getParameter } from "./utils/parameterstore.js";
 import { getSecret } from "./utils/secretmanager.js";
 import { connectMemcache } from "./utils/memcache.js";
+import { initRDS } from "./utils/rds.js";
 
 await getSecret("mongodb");
 
@@ -30,6 +31,7 @@ createPathIfNotExist(outputPath);
 try {
   await connectMongo();
   await connectMemcache();
+  await initRDS();
 } catch (err) {
   console.error(`Initial connection err: ${err.message}`);
   process.exit(1);
