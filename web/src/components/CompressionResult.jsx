@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 
 const CompressionResult = () => {
-  const { setStep, taskId, setTaskId, setVideoList } = useOutletContext();
-  const videoList = useLoaderData();
+  const { setStep, taskId, setTaskId, setHistoryList } = useOutletContext();
+  const history = useLoaderData();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setVideoList(videoList);
+    setHistoryList(history);
     if (!taskId) navigate("/panel");
     setStep(2);
   }, []);

@@ -1,10 +1,11 @@
 import { IconSend } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useLoaderData } from "react-router-dom";
 import { initCompressionTask } from "../api/requests";
 
 const SettingForm = () => {
-  const { videoList, setStep, setTaskId } = useOutletContext();
+  const { setStep, setTaskId } = useOutletContext();
+  const [uploadList] = useState(useLoaderData());
   const navigate = useNavigate();
   const videoFileInput = useRef(null);
   const videoNameInput = useRef(null);
@@ -72,8 +73,7 @@ const SettingForm = () => {
             }}
           >
             <option value="">Select the video you want to compress</option>
-            {videoList
-              .filter((item) => !item.compression_level)
+            {uploadList
               .map((video, index) => (
                 <option key={index} value={video.file_name}>
                   {video.original_name}

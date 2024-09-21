@@ -1,8 +1,14 @@
 import { DateTime } from "luxon";
 import { videoDownload } from "../api/requests";
 import { saveAs } from "file-saver";
+import { IconDownload, IconInfoCircle } from "@tabler/icons-react";
+import { useState } from "react";
+import DetailModal from "./DetailModal";
 
 const CompressedVideoList = ({ videoList }) => {
+  const id = "detail-modal"
+  const [fileName, setfileName] = useState(null);
+
   const download = (fileName) => {
     videoDownload(fileName)
       .then((blob) => {
@@ -16,7 +22,7 @@ const CompressedVideoList = ({ videoList }) => {
   return (
     <>
       <h1 className="font-medium mb-2">Your compressed videos:</h1>
-      {videoList.length === 0 ? (
+      {!videoList || videoList.length === 0 ? (
         <h2 className="font-medium mb-2">
           You have no video upload records yet.
         </h2>
@@ -44,14 +50,23 @@ const CompressedVideoList = ({ videoList }) => {
                     )}
                   </td>
                   <td>{video.compression_level}</td>
-                  <td>
+                  <td className="flex gap-2">
+                    <button
+                      className="btn btn-outline btn-primary btn-sm"
+                      onClick={() => {
+                        setfileName(video.file_name)
+                        document.getElementById(id).showModal();
+                      }}
+                    >
+                      <IconInfoCircle stroke={1} />
+                    </button>
                     <button
                       className="btn btn-outline btn-primary btn-sm"
                       onClick={() => {
                         download(video.file_name);
                       }}
                     >
-                      Download
+                      <IconDownload stroke={1} />
                     </button>
                   </td>
                 </tr>
@@ -59,6 +74,7 @@ const CompressedVideoList = ({ videoList }) => {
           </tbody>
         </table>
       )}
+      <DetailModal id={id} fileName={fileName} />
     </>
   );
 };

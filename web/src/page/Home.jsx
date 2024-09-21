@@ -7,12 +7,11 @@ import { Outlet, useLoaderData } from "react-router-dom";
 const HomePage = () => {
   const [step, setStep] = useState(0);
   const [taskId, setTaskId] = useState(null);
-  const [videoList, setVideoList] = useState(useLoaderData());
+  const [historyList, setHistoryList] = useState(useLoaderData());
 
   return (
     <div className="min-h-screen bg-base-200">
       <Header />
-
       <main className="p-4">
         <div className="shadow-md bg-base-100 rounded-lg p-6 mb-6">
           <div className="flex justify-center mb-6">
@@ -21,13 +20,13 @@ const HomePage = () => {
           {/* File Upload Area */}
           <div className="mb-6 flex flex-col items-center">
             <Outlet
-              context={{ step, setStep, taskId, setTaskId, setVideoList, videoList }}
+              context={{ step, setStep, taskId, setTaskId, historyList, setHistoryList }}
             />
           </div>
         </div>
 
         <div className="shadow-md bg-base-100 rounded-lg p-6 mb-6 overflow-x-auto">
-          <CompressedVideoList videoList={videoList} />
+          <CompressedVideoList videoList={historyList} />
         </div>
       </main>
     </div>

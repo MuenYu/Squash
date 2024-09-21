@@ -54,7 +54,7 @@ export async function login({ username, password }) {
   localStorage.setItem(authKey, respData.idToken);
   localStorage.setItem('accessToken', respData.accessToken);
   localStorage.setItem('refreshToken', respData.refreshToken);
-  localStorage.setItem('username', username); 
+  localStorage.setItem('username', username);
   return { requiresMFA: false, mfaEnabled: respData.mfaEnabled };
 }
 
@@ -103,17 +103,21 @@ async function fetchProgressAPI(taskId) {
 }
 export const fetchProgress = useAuthCheck(fetchProgressAPI);
 
-async function fetchVideoListAPI() {
-  const resp = await client.get("videos");
-  const respData = await resp.json();
-  if (!resp.ok) {
-    throw new Error(respData.msg);
-  }
-  return respData.data;
+async function fetchHistoryAPI() {
+  const resp = await client.get("videos/history");
+  const history = await resp.json();
+  if (!resp.ok) throw new Error(history.msg);
+  return history.data
 }
-export const fetchVideoList = useAuthCheck(
-  fetchVideoListAPI
-);
+export const fetchHistory = useAuthCheck(fetchHistoryAPI);
+
+async function fetchUploadVideoAPI() {
+  const resp = await client.get("videos/upload");
+  const upload = await resp.json();
+  if (!resp.ok) throw new Error(upload.msg);
+  return upload.data;
+}
+export const fetchUploadVideo = useAuthCheck(fetchUploadVideoAPI)
 
 async function videoDownloadAPI(fileName) {
   const resp = await client.get(`videos/${fileName}`);
@@ -124,6 +128,15 @@ async function videoDownloadAPI(fileName) {
   return await resp.blob();
 }
 export const videoDownload = useAuthCheck(videoDownloadAPI);
+
+async function detailAPI(videoName) {
+  if (!videoName) throw new Error("no video name");
+  const resp = await client.get(`videos/detail/${videoName}`)
+  const detail = await resp.json()
+  if (!resp.ok) throw new Error(detail.msg || "get detail failed");
+  return detail.data
+}
+export const detail = useAuthCheck(detailAPI);
 
 export async function setupMFA(accessToken) {
   const resp = await client.post("users/setup-mfa", {

@@ -6,14 +6,44 @@ import Ffmpeg from "fluent-ffmpeg";
 import { v4 as uuidv4 } from "uuid";
 import { uploadPath, outputPath } from "../utils/path.js";
 import { mClient } from "../utils/memcache.js";
+import { rds } from "../utils/rds.js";
+import fs from "fs"
+
+export const detail = asyncHandler(async (req, res) => {
+  const filter = {
+    owner: req.username,
+    file_name: req.params.fileName,
+    compression: { $exists: true, $ne: null }
+  }
+  const video = await Video.findOne(filter, { _id: 0 });
+  const info = video.compression;
+  if (!video) errBuilder(404, "the video does not exist")
+  const data = {
+    "Compression level": info.compression_level,
+    "Original file size": `${(info.original_size/1024/1024).toFixed(2)} MB`,
+    "Compressed file size": `${(info.compressed_size/1024/1024).toFixed(2)} MB`,
+    "Compression ratio": info.compression_ratio
+  }
+  res.json({ data: data })
+})
 
 /**
- * List all videos of the user that are uploaded/compressed
+ * show user compression history
+ */
+export const history = asyncHandler(async (req, res) => {
+  const username = req.username;
+  const data = await rds('history').where({ owner: username }).select('*')
+  res.json({ data: data });
+});
+
+/**
+ * List all videos of the user that are uploaded
  */
 export const list = asyncHandler(async (req, res) => {
   const username = req.username;
   const filter = {
     owner: username,
+    compression: undefined
   };
   const data = await Video.find(filter).sort({ create_time: -1 });
   res.json({ data: data });
@@ -38,66 +68,88 @@ export const compress = asyncHandler(async (req, res) => {
   if (!level) errBuilder(400, "bad request");
 
   if (videoName?.length > 0) { // use existing video
-    const video = await Video.findOne({ file_name: videoName, compression_level: undefined })
+    const video = await Video.findOne({ file_name: videoName, compression: undefined })
+    if (!video) errBuilder(404, "the video does not exist")
     originalName = video.original_name
   } else if (req?.files?.videoFile) { // upload new video
     if (!req?.files?.videoFile) errBuilder(400, "bad request")
     const file = req.files.videoFile;
     originalName = file.name;
-    videoName = `${username}-${Date.now()}-${originalName}`;
-    // save the file to disk
-    await file.mv(
-      path.join(uploadPath, videoName),
-      async (err) => {
-        if (err) throw err;
-      }
-    );
+    videoName = `${Date.now()}-${originalName}`;
+
+    // Save the file to disk
+    await file.mv(path.join(uploadPath, videoName));
+
     const video = new Video({
       original_name: originalName,
+      file_name: videoName,
       owner: username,
-      file_name: videoName
     })
     await video.save();
   } else {
     errBuilder(400, "bad request");
   }
 
-  // start compression
-  const compressedFileName = `${Date.now()}-${level}-${videoName}`;
+  // Start compression
   const taskId = uuidv4();
+  const compressedFileName = `${taskId}-${videoName}`;
+  const originalFilePath = path.join(uploadPath, videoName);
+  const compressedFilePath = path.join(outputPath, compressedFileName);
+
   Ffmpeg()
-    .input(path.join(uploadPath, videoName))
-    .videoCodec("libx265") // Set the video codec
-    .audioCodec("libmp3lame") // Set the audio codec
+    .input(originalFilePath)
+    .videoCodec('libx265') // Set the video codec
+    .audioCodec('libmp3lame') // Set the audio codec
     .outputOptions([
       `-crf ${level}`, // Constant Rate Factor (higher is more compression)
-      "-preset veryfast", // Encoding speed vs compression tradeoff
+      '-preset veryfast', // Encoding speed vs compression tradeoff
     ])
-    .on("start", async () => {
-      await mClient.set(taskId, 0)
+    .on('start', async () => {
+      await mClient.set(taskId, 0);
       res.json({ taskId: taskId, fileName: videoName });
     })
-    .on("progress", async (progress) => {
-      if (!isNaN(progress.percent))
-        await mClient.set(taskId, Math.floor(progress.percent))
+    .on('progress', async (progress) => {
+      if (!isNaN(progress.percent)) {
+        await mClient.set(taskId, Math.floor(progress.percent));
+      }
     })
-    .on("end", async () => {
-      const video = new Video({
+    .on('end', async () => {
+      // Get the sizes of the original and compressed files
+      const originalStats = await fs.promises.stat(originalFilePath);
+      const compressedStats = await fs.promises.stat(compressedFilePath);
+      const compressionLevel = level <= 28 ? 'Low' : level <= 38 ? 'Medium' : 'High';
+      const originalSize = originalStats.size; // in bytes
+      const compressedSize = compressedStats.size; // in bytes
+      const compressionRatio = (originalSize / compressedSize).toFixed(2); // compression ratio
+
+      // Save compressed video details to the database
+      await new Video({
+        original_name: originalName,
+        file_name: compressedFileName,
+        owner: username,
+        compression: {
+          compression_level: compressionLevel,
+          original_size: originalSize, // in bytes
+          compressed_size: compressedSize, // in bytes
+          compression_ratio: compressionRatio,
+        },
+      }).save();
+      // Save the history to RDS
+      await rds('history').insert({
         original_name: originalName,
         owner: username,
-        compression_level:
-          level <= 28 ? "Low" : level <= 38 ? "Medium" : "High",
-        file_name: compressedFileName,  
-      });
-      await video.save();
-      await mClient.set(taskId, 100)
+        compression_level: compressionLevel,
+        file_name: compressedFileName,
+      })
+      // Mark compression as complete
+      await mClient.set(taskId, 100);
     })
-    .on("error", async (err) => {
-      console.error("Error during compression:", err);
-      await mClient.remove(taskId);
-      errBuilder(500, err.message);
+    .on('error', async (err) => {
+      console.error('Error during compression:', err);
+      await mClient.del(taskId); // Clean up the task if it fails
+      return errBuilder(500, err.message);
     })
-    .save(path.join(outputPath, compressedFileName));
+    .save(compressedFilePath);
 });
 
 export const download = asyncHandler(async (req, res) => {

@@ -6,7 +6,7 @@ import NotFoundPage from "./page/NotFound";
 import SettingForm from "./components/SettingForm";
 import Progress from "./components/Progress";
 import CompressionResult from "./components/CompressionResult";
-import { fetchVideoList } from "./api/requests";
+import { fetchHistory, fetchUploadVideo } from "./api/requests";
 import IntroPage from "./page/Intro";
 import MFASetupPage from "./page/MFASetup";
 
@@ -18,11 +18,12 @@ const router = createBrowserRouter([
       {
         path: "panel",
         element: <HomePage />,
-        loader: fetchVideoList,
+        loader: fetchHistory,
         children: [
           {
             index: true,
             element: <SettingForm />,
+            loader: fetchUploadVideo,
           },
           {
             path: "compressing",
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
           {
             path: "complete",
             element: <CompressionResult />,
-            loader: fetchVideoList,
+            loader: fetchHistory,
           },
         ],
       },
