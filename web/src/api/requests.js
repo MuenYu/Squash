@@ -123,7 +123,7 @@ async function videoDownloadAPI(fileName) {
   const resp = await client.get(`videos/${fileName}`);
   const respData = await resp.json();
   if (!resp.ok) {
-    throw new Error(respData);
+    throw new Error(respData.msg);
   }
   return respData;
 }

@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { videoDownload } from "../api/requests";
-import { saveAs } from "file-saver";
 import { IconDownload, IconInfoCircle } from "@tabler/icons-react";
 import { useState } from "react";
 import DetailModal from "./DetailModal";

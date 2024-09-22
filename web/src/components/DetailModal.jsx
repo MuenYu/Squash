@@ -23,11 +23,11 @@ export default function DetailModal({ id, fileName }) {
                         <p key={index}>{key}: {value}</p>
                     )))
                     :
-                    <p>No Detail yet</p>
+                    <span className="loading loading-spinner loading-lg"></span>
                 }
             </div>
             <form method="dialog" className="modal-backdrop">
-                <button>close</button>
+                <button onClick={()=> {setCompressionInfo(null)}}>close</button>
             </form>
         </dialog>
     )
