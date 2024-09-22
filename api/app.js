@@ -17,6 +17,7 @@ import { getParameter } from "./utils/parameterstore.js";
 import { getSecret } from "./utils/secretmanager.js";
 import { connectMemcache } from "./utils/memcache.js";
 import { initRDS } from "./utils/rds.js";
+import { initS3 } from "./utils/s3.js";
 
 await getSecret("mongodb");
 
@@ -32,8 +33,9 @@ try {
   await connectMongo();
   await connectMemcache();
   await initRDS();
+  await initS3();
 } catch (err) {
-  console.error(`Initial connection err: ${err.message}`);
+  console.error(err);
   process.exit(1);
 }
 

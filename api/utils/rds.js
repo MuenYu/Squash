@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS history (
     owner VARCHAR(255) NOT NULL, 
     compression_level VARCHAR(255), 
     file_name VARCHAR(255) NOT NULL,
+    s3 VARCHAR(255) NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `

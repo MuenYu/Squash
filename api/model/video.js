@@ -12,6 +12,7 @@ const videoSchema = new mongoose.Schema({
   original_name: { type: String, required: true }, // Name of the original name
   owner: { type: String, required: true }, // Owner of the file
   create_time: { type: Date, default: Date.now }, // Creation or upload time
+  s3_key: {type: String, required: true}, // S3 key
   compression: {
     type: compressionSchema,
     required: false

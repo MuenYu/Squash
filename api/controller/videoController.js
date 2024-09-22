@@ -8,6 +8,7 @@ import { uploadPath, outputPath } from "../utils/path.js";
 import { mClient } from "../utils/memcache.js";
 import { rds } from "../utils/rds.js";
 import fs from "fs"
+import { get, put, putByPath } from "../utils/s3.js";
 
 export const detail = asyncHandler(async (req, res) => {
   const filter = {
@@ -20,8 +21,8 @@ export const detail = asyncHandler(async (req, res) => {
   if (!video) errBuilder(404, "the video does not exist")
   const data = {
     "Compression level": info.compression_level,
-    "Original file size": `${(info.original_size/1024/1024).toFixed(2)} MB`,
-    "Compressed file size": `${(info.compressed_size/1024/1024).toFixed(2)} MB`,
+    "Original file size": `${(info.original_size / 1024 / 1024).toFixed(2)} MB`,
+    "Compressed file size": `${(info.compressed_size / 1024 / 1024).toFixed(2)} MB`,
     "Compression ratio": info.compression_ratio
   }
   res.json({ data: data })
@@ -64,6 +65,7 @@ export const compress = asyncHandler(async (req, res) => {
   const level = req.body.level;
   let videoName = req.body.videoName;
   let originalName = ''
+  let inputS3Key = ''
 
   if (!level) errBuilder(400, "bad request");
 
@@ -71,19 +73,24 @@ export const compress = asyncHandler(async (req, res) => {
     const video = await Video.findOne({ file_name: videoName, compression: undefined })
     if (!video) errBuilder(404, "the video does not exist")
     originalName = video.original_name
+    inputS3Key = video.s3_key
+    await get(inputS3Key, path.join(uploadPath, videoName))
   } else if (req?.files?.videoFile) { // upload new video
     if (!req?.files?.videoFile) errBuilder(400, "bad request")
     const file = req.files.videoFile;
     originalName = file.name;
-    videoName = `${Date.now()}-${originalName}`;
+    videoName = `${username}-${Date.now()}-${originalName}`;
+    inputS3Key = `upload/${videoName}`
 
     // Save the file to disk
     await file.mv(path.join(uploadPath, videoName));
+    await put(inputS3Key, file.data);
 
     const video = new Video({
       original_name: originalName,
       file_name: videoName,
       owner: username,
+      s3_key: inputS3Key
     })
     await video.save();
   } else {
@@ -121,11 +128,16 @@ export const compress = asyncHandler(async (req, res) => {
       const originalSize = originalStats.size; // in bytes
       const compressedSize = compressedStats.size; // in bytes
       const compressionRatio = (originalSize / compressedSize).toFixed(2); // compression ratio
+      const outputS3Key = `output/${compressedFileName}`
+
+      // save the file to s3
+      await putByPath(outputS3Key, compressedFilePath)
 
       // Save compressed video details to the database
       await new Video({
         original_name: originalName,
         file_name: compressedFileName,
+        s3_key: outputS3Key,
         owner: username,
         compression: {
           compression_level: compressionLevel,
@@ -140,6 +152,7 @@ export const compress = asyncHandler(async (req, res) => {
         owner: username,
         compression_level: compressionLevel,
         file_name: compressedFileName,
+        s3: outputS3Key
       })
       // Mark compression as complete
       await mClient.set(taskId, 100);
