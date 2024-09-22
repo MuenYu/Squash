@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { errBuilder } from "../middleware/err.js";
 import { getSecret } from "../utils/secretmanager.js";
+import { getParameter } from "../utils/parameterstore.js";
 import { 
   CognitoIdentityProviderClient, 
   InitiateAuthCommand,
@@ -9,13 +10,14 @@ import {
   AssociateSoftwareTokenCommand,
   VerifySoftwareTokenCommand,
   SetUserMFAPreferenceCommand,
-  RespondToAuthChallengeCommand
+  RespondToAuthChallengeCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-
+import axios from 'axios';
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
 const CLIENT_ID = await getSecret('clientId')
-
+const cognitoDomain = await getSecret('cognitoDomain')
+const redirect_uri = await getParameter(process.env.PARAMETER_STORE_REDIRECT_URI)
 
 export const register = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body;
@@ -162,4 +164,47 @@ export const verifyMFAChallenge = asyncHandler(async (req, res) => {
   } catch (error) {
     errBuilder(401, "Invalid MFA code");
   }
+});
+
+export const handleGoogleAuth = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    // Exchange authorization code for Cognito tokens
+    const tokenResponse = await axios.post(`https://${cognitoDomain}/oauth2/token`, 
+      new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: CLIENT_ID,
+        code: code,
+        redirect_uri: redirect_uri
+      }).toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    );
+
+    const { id_token, access_token, refresh_token } = tokenResponse.data;
+
+    // Send tokens back to the client
+    res.json({ 
+      idToken: id_token, 
+      accessToken: access_token, 
+      refreshToken: refresh_token 
+    });
+
+  } catch (error) {
+    console.error('Google auth error:', error.response ? error.response.data : error);
+    res.status(500).json({ 
+      message: 'Authentication failed', 
+      error: error.message,
+      details: error.response ? error.response.data : 'No additional details'
+    });
+  }
+};
+
+export const getGoogleSignInUrl = asyncHandler(async (req, res) => {
+  const url = `https://${cognitoDomain}/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirect_uri)}&identity_provider=Google`;
+  res.json({ url });
 });

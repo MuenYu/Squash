@@ -17,5 +17,6 @@ export async function getParameter(key) {
         return response.Parameter.Value;
      } catch (error) {
         console.log(error);
+        throw error
      }
 }

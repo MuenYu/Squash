@@ -1,7 +1,6 @@
 import express from "express";
-import { register, confirmRegistration, login, setupMFA, 
-    verifyMFA, 
-    verifyMFAChallenge } from "../controller/userController.js";
+import { register, confirmRegistration, login, setupMFA, verifyMFA, 
+    verifyMFAChallenge, handleGoogleAuth, getGoogleSignInUrl } from "../controller/userController.js";
 
 const router = express.Router();
 
@@ -14,5 +13,7 @@ router.post("/login", login);
 router.post("/setup-mfa", setupMFA);
 router.post("/verify-mfa", verifyMFA);
 router.post("/verify-mfa-challenge", verifyMFAChallenge);
+router.post("/google", handleGoogleAuth);
+router.get("/google-signin-url", getGoogleSignInUrl);
 
 export default router;

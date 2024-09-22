@@ -9,6 +9,7 @@ import CompressionResult from "./components/CompressionResult";
 import { fetchHistory, fetchUploadVideo } from "./api/requests";
 import IntroPage from "./page/Intro";
 import MFASetupPage from "./page/MFASetup";
+import GoogleOAuthCallback from './page/GoogleOAuthCallback';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "mfa-setup",
         element: <MFASetupPage />,
+      },
+      {
+        path: "googlecallback",
+        element: <GoogleOAuthCallback />,
       },
       {
         index: true,

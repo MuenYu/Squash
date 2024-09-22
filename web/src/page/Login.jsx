@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from "/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { login, register, confirmRegistration, verifyMFAChallenge } from "../api/requests";
+import { login, register, confirmRegistration, verifyMFAChallenge, initiateGoogleSignIn } from "../api/requests";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -15,14 +15,19 @@ const AuthPage = () => {
   const [mfaSession, setMfaSession] = useState('');
   const [mfaCode, setMfaCode] = useState('');
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await initiateGoogleSignIn();
+    } catch (error) {
+      console.error('Google Sign-In failed:', error);
+      alert('Unable to initiate Google Sign-In. Please try again.');
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    
     try {
-      console.log('Current state:', { isRegistering, isVerifying, username, verificationCode });
-      
       if (isVerifying) {
-        console.log('Attempting to confirm registration');
         if (!verificationCode) {
           alert("Verification code is required.");
           return;
@@ -35,7 +40,6 @@ const AuthPage = () => {
         setEmail('');
         setVerificationCode('');
       } else if (isRegistering) {
-        console.log('Attempting to register');
         await register({ username, password, email });
         setIsVerifying(true);
         alert("Registration successful. Please check your email for the verification code.");
@@ -110,52 +114,58 @@ const AuthPage = () => {
     }
 
     return (
-      <form onSubmit={onSubmit}>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Username</span>
-          </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
-            className="input input-bordered"
-            required
-          />
-        </div>
-        <div className="form-control mt-4">
-          <label className="label">
-            <span className="label-text">Password</span>
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            className="input input-bordered"
-            required
-          />
-        </div>
-        {isRegistering && (
-          <div className="form-control mt-4">
+      <>
+        <form onSubmit={onSubmit}>
+          <div className="form-control">
             <label className="label">
-              <span className="label-text">Email</span>
+              <span className="label-text">Username</span>
             </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
               className="input input-bordered"
               required
             />
           </div>
-        )}
-        <button type="submit" className="btn btn-primary w-full mt-6">
-          {isRegistering ? 'Register' : 'Login'}
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">Password</span>
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="input input-bordered"
+              required
+            />
+          </div>
+          {isRegistering && (
+            <div className="form-control mt-4">
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="input input-bordered"
+                required
+              />
+            </div>
+          )}
+          <button type="submit" className="btn btn-primary w-full mt-6">
+            {isRegistering ? 'Register' : 'Login'}
+          </button>
+        </form>
+        <div className="divider">OR</div>
+        <button onClick={handleGoogleSignIn} className="btn btn-outline w-full mt-4">
+          Sign in with Google
         </button>
-      </form>
+      </>
     );
   };
 
@@ -171,7 +181,7 @@ const AuthPage = () => {
           </div>
         </Link>
         {renderForm()}
-        {!isVerifying && (
+        {!isVerifying && !requiresMFA && (
           <button
             onClick={() => {
               setIsRegistering(!isRegistering);

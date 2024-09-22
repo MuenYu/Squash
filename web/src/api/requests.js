@@ -171,3 +171,31 @@ export async function verifyMFAChallenge({ username, session, mfaCode }) {
   localStorage.setItem('accessToken', respData.accessToken);
   localStorage.setItem('refreshToken', respData.refreshToken);
 }
+
+export async function exchangeGoogleToken(code) {
+  const resp = await client.post("users/google", { json: { code } });
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.message || "Failed to authenticate with Google");
+  }
+  // Store tokens in localStorage
+  localStorage.setItem(authKey, data.idToken);
+  localStorage.setItem('accessToken', data.accessToken);
+  localStorage.setItem('refreshToken', data.refreshToken);
+  return data;
+}
+
+export const initiateGoogleSignIn = async () => {
+  try {
+    const resp = await client.get("users/google-signin-url");
+    if (!resp.ok) {
+      const respData = await resp.json();
+      throw new Error(respData.msg || "Failed to initiate Google Sign-In");
+    }
+    const { url } = await resp.json();
+    window.location.href = url;
+  } catch (error) {
+    console.error('Failed to initiate Google Sign-In:', error);
+    throw error;
+  }
+};

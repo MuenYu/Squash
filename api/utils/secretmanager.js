@@ -14,5 +14,6 @@ export async function getSecret(key) {
         return secret[key]
     } catch (error) {
         console.log(error);
+        throw error
     }
 }
