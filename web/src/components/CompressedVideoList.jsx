@@ -11,8 +11,8 @@ const CompressedVideoList = ({ videoList }) => {
 
   const download = (fileName) => {
     videoDownload(fileName)
-      .then((blob) => {
-        saveAs(blob, fileName);
+      .then((url) => {
+        window.open(url, '_blank');
       })
       .catch((err) => {
         alert(err.message);

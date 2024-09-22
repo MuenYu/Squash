@@ -121,11 +121,11 @@ export const fetchUploadVideo = useAuthCheck(fetchUploadVideoAPI)
 
 async function videoDownloadAPI(fileName) {
   const resp = await client.get(`videos/${fileName}`);
+  const respData = await resp.json();
   if (!resp.ok) {
-    const respData = await resp.json();
-    throw new Error(respData.msg);
+    throw new Error(respData);
   }
-  return await resp.blob();
+  return respData;
 }
 export const videoDownload = useAuthCheck(videoDownloadAPI);
 

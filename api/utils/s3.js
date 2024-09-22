@@ -1,4 +1,5 @@
 import S3 from "@aws-sdk/client-s3";
+import S3Presigner from "@aws-sdk/s3-request-presigner"
 import { exist, file2Stream, stream2file } from "./path.js";
 
 const s3client = new S3.S3Client({ region: process.env.AWS_REGION });
@@ -92,6 +93,11 @@ export async function get(key, path) {
     }
 }
 
-export async function sign() {
-    // Implementation for generating a presigned URL
+export async function getPresignedURL(key) {
+    const command = new S3.GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+    });
+    const presignedURL = await S3Presigner.getSignedUrl(s3client, command, { expiresIn: 3600 });
+    return presignedURL;
 }

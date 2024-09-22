@@ -8,7 +8,7 @@ import { uploadPath, outputPath } from "../utils/path.js";
 import { mClient } from "../utils/memcache.js";
 import { rds } from "../utils/rds.js";
 import fs from "fs"
-import { get, put, putByPath } from "../utils/s3.js";
+import { get, getPresignedURL, put, putByPath } from "../utils/s3.js";
 
 export const detail = asyncHandler(async (req, res) => {
   const filter = {
@@ -169,10 +169,11 @@ export const download = asyncHandler(async (req, res) => {
   const filter = {
     owner: req.username,
     file_name: req.params.fileName,
+    compression: { $exists: true, $ne: null }
   };
-  if (!(await Video.exists(filter)))
+  const video = await Video.findOne(filter);
+  if (!video)
     errBuilder(404, "the video does not exist");
-  res.sendFile(path.join(outputPath, filter.file_name), (err) => {
-    if (err) errBuilder(err.status, err.message);
-  });
+  const url = await getPresignedURL(video.s3_key);
+  return res.json(url)
 });
