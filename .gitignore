@@ -37,3 +37,6 @@ api/output
 
 # cert files
 global-bundle.pem
+
+# deploy
+deploy/*
