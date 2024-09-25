@@ -2,9 +2,10 @@ import S3 from "@aws-sdk/client-s3";
 import S3Presigner from "@aws-sdk/s3-request-presigner"
 import { exist, file2Stream, stream2file } from "./path.js";
 import { getParameter } from "./parameterstore.js";
+import { region } from "./const.js";
 
-const s3client = new S3.S3Client({ region: process.env.AWS_REGION });
-const bucketName = await getParameter(process.env.PARAMETER_STORE_S3BUCKET);
+const s3client = new S3.S3Client({ region: region });
+const bucketName = await getParameter('s3');
 
 // Create the s3 bucket if not exist
 export async function initS3() {

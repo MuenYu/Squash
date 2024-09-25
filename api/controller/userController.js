@@ -17,7 +17,7 @@ import axios from 'axios';
 const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
 const CLIENT_ID = await getSecret('clientId')
 const cognitoDomain = await getSecret('cognitoDomain')
-const redirect_uri = await getParameter(process.env.PARAMETER_STORE_REDIRECT_URI)
+const redirect_uri = await getParameter('redirect_uri')
 
 export const register = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body;

@@ -1,7 +1,6 @@
 import fileUpload from "express-fileupload";
-import { getParameter } from "../utils/parameterstore.js";
 
-const maxSize = await getParameter(process.env.PARAMETER_STORE_MAXSIZE) || 52428800;
+const maxSize = 52428800;
 
 export const uploader = fileUpload({
     limits: { fileSize: Number(maxSize) }, // limit max file size

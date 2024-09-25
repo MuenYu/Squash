@@ -14,15 +14,12 @@ import morgan from "morgan";
 
 import { connectMongo } from "./utils/mongo.js";
 import { getParameter } from "./utils/parameterstore.js";
-import { getSecret } from "./utils/secretmanager.js";
 import { connectMemcache } from "./utils/memcache.js";
 import { initRDS } from "./utils/rds.js";
 import { initS3 } from "./utils/s3.js";
 
-await getSecret("mongodb");
-
 // app conf
-const port = await getParameter(process.env.PARAMETER_STORE_PORT) || 3000;
+const port = await getParameter('port') || 3000;
 
 // create folders for upload and output if not exist
 createPathIfNotExist(uploadPath);

@@ -1,7 +1,7 @@
 import SecretsManager from "@aws-sdk/client-secrets-manager";
+import { region, secretName } from "./const.js";
 
-const secretName = process.env.SECRET_MANAGER_NAME;
-const client = new SecretsManager.SecretsManagerClient({ region: process.env.AWS_REGION })
+const client = new SecretsManager.SecretsManagerClient({ region: region })
 
 export async function getSecret(key) {
     try {
