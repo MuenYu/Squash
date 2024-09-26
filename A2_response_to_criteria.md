@@ -94,25 +94,26 @@ Other data storage services may lack the scalability, durability, and low-latenc
 
 ### Core - Authentication with Cognito
 
-- **User pool name:**
-- **How are authentication tokens handled by the client?:** [eg. Response to login request sets a cookie containing the token.]
+- **User pool name:** squash-assess2
+- **How are authentication tokens handled by the client?:** Authentication tokens are handled by storing them in the browser's localStorage after a successful login.
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/controller/userController.js: 23, 43, 64
+    - /api/middleware/auth.js
 
 ### Cognito multi-factor authentication
 
-- **What factors are used for authentication:** [eg. password, SMS code]
+- **What factors are used for authentication:** TOTP provided by Google Authenticator app
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/controller/userController.js: 64, 100, 115, 142
 
 ### Cognito federated identities
 
-- **Identity providers used:**
+- **Identity providers used:** Google
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/controller/userController.js: 170, 208
 
 ### Cognito groups
 
