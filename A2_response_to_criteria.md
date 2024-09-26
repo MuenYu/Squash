@@ -26,58 +26,63 @@ Core criteria
 
 ### Core - First data persistence service
 
-- **AWS service name:**  [eg. S3]
-- **What data is being stored?:** [eg video files]
-- **Why is this service suited to this data?:** [eg. large files are best suited to blob storage due to size restrictions on other services]
-- **Why is are the other services used not suitable for this data?:**
-- **Bucket/instance/table name:**
+- **AWS service name:**  S3
+- **What data is being stored?:** user-uploaded and compressed videos
+- **Why is this service suited to this data?:** large files are best suited to blob storage due to size restrictions on other services
+- **Why is are the other services used not suitable for this data?:** 
+Other data storage services may lack the scalability, durability, and low-latency retrieval that Amazon S3 provides, making them less ideal for storing and serving large video files efficiently.
+- **Bucket/instance/table name:** squash-assess2
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/util/s3.js
+    - /api/controller/videoController.js
 
 ### Core - Second data persistence service
 
-- **AWS service name:**  [eg. DynamoDB]
-- **What data is being stored?:** 
-- **Why is this service suited to this data?:**
-- **Why is are the other services used not suitable for this data?:**
+- **AWS service name:**  RDS
+- **What data is being stored?:** video compress history
+- **Why is this service suited to this data?:** RDS is ideal for storing compressed historical data because it provides managed relational database capabilities, ensuring data integrity, easy querying, and automated backups in a scalable and reliable environment.
+- **Why is are the other services used not suitable for this data?:** Other services may lack the relational structure, strong consistency, or efficient query capabilities needed for complex historical data analysis and management.
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/util/rds.js
+    - /api/controller/videoController.js
 
 ### Third data service
 
-- **AWS service name:**  [eg. RDS]
-- **What data is being stored?:** [eg video metadata]
-- **Why is this service suited to this data?:** [eg. ]
-- **Why is are the other services used not suitable for this data?:** [eg. Advanced video search requires complex querries which are not available on S3 and inefficient on DynamoDB]
+- **AWS service name:**  documentdb
+- **What data is being stored?:** video compression metadata
+- **Why is this service suited to this data?:** DocumentDB is well-suited for storing compression metadata because it efficiently handles semi-structured data, scales seamlessly, and provides flexible querying for document-based data models.
+- **Why is are the other services used not suitable for this data?:** Other services may not offer the same performance or flexibility when managing complex, nested metadata structures or lack the optimized handling of semi-structured data.
 - **Video timestamp:**
 - **Relevant files:**
     -
 
 ### S3 Pre-signed URLs
 
-- **S3 Bucket names:**
+- **S3 Bucket names:** squash-assess2
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/util/s3.js
+    - /api/controller/videoController.js
 
 ### In-memory cache
 
-- **ElastiCache instance name:**
-- **What data is being cached?:** [eg. Thumbnails from YouTube videos obatined from external API]
-- **Why is this data likely to be accessed frequently?:** [ eg. Thumbnails from popular YouTube videos are likely to be shown to multiple users ]
+- **ElastiCache instance name:** squash-assess2
+- **What data is being cached?:** compression real-time progress
+- **Why is this data likely to be accessed frequently?:** the client will send polling requests to get the progress data, and the progress will also be written by the server side
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/utils/memcache.js
+    - /api/controller/videoController.js
 
 ### Core - Statelessness
 
-- **What data is stored within your application that is not stored in cloud data services?:** [eg. intermediate video files that have been transcoded but not stabilised]
-- **Why is this data not considered persistent state?:** [eg. intermediate files can be recreated from source if they are lost]
-- **How does your application ensure data consistency if the app suddenly stops?:** [eg. journal used to record data transactions before they are done.  A separate task scans the journal and corrects problems on startup and once every 5 minutes afterwards. ]
+- **What data is stored within your application that is not stored in cloud data services?:** intermediate videos during compression
+- **Why is this data not considered persistent state?:** they can be regenerated when launching a task
+- **How does your application ensure data consistency if the app suddenly stops?:** the application will ensure the task is done and then store the data to database. Otherwise, the task will be dropped and no data will be recorded.
 - **Relevant files:**
-    -
+    - /api/utils/videoController.js
 
 ### Graceful handling of persistent connections
 
@@ -118,39 +123,39 @@ Core criteria
 
 ### Core - DNS with Route53
 
-- **Subdomain**:  [eg. myawesomeapp.cab432.com]
+- **Subdomain**:  squash.cab432.com
 - **Video timestamp:**
 
 
 ### Custom security groups
 
-- **Security group names:**
-- **Services/instances using security groups:**
+- **Security group names:** SquashAss2AppSG, SquashAss2DBSG
+- **Services/instances using security groups:** SquashAss2AppSG for EC2, SquashAss2DBSG for RDS, ElastiCache and documentdb
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /deploy/cloudformation.yaml
 
 ### Parameter store
 
-- **Parameter names:** [eg. n1234567/base_url]
+- **Parameter names:** /assess2/squash/port, /assess2/squash/redirect_uri & /assess2/squash/s3
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/utils/parameterstore.js
 
 ### Secrets manager
 
-- **Secrets names:** [eg. n1234567-youtube-api-key]
+- **Secrets names:** /assess2/squash/secret
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/utils/secretmanager.js
 
 ### Infrastructure as code
 
-- **Technology used:**
-- **Services deployed:**
+- **Technology used:** cloudformation
+- **Services deployed:** EC2, DocumentDB, RDS, ElastiCache and cognito
 - **Video timestamp:**
 - **Relevant files:**
-    -
+    - /api/utils/cloudformation.yaml
 
 ### Other (with prior approval only)
 

@@ -41,14 +41,14 @@ const app = express();
 app.use(morgan('tiny'))
 app.use(cors());
 app.use(express.json());
-// app.use(express.static(publicPath));
+app.use(express.static(publicPath));
 
 // routers
 app.use("/api/users", user);
 app.use("/api/videos", video);
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(publicPath, "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
+});
 
 // general error handlement
 app.use(errHandler);

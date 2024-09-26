@@ -13,8 +13,9 @@ import {
   RespondToAuthChallengeCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import axios from 'axios';
+import { region } from "../utils/const.js";
 
-const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
+const cognitoClient = new CognitoIdentityProviderClient({ region: region });
 const CLIENT_ID = await getSecret('clientId')
 const cognitoDomain = await getSecret('cognitoDomain')
 const redirect_uri = await getParameter('redirect_uri')
