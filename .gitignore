@@ -39,4 +39,4 @@ api/output
 global-bundle.pem
 
 # deploy
-deploy/*.yaml
+# deploy/*.yaml

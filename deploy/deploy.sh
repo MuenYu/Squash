@@ -1,16 +1,17 @@
 # install dep
-cd ~/CAB432/api
+cd /home/ubuntu/CAB432/api
 npm i
 
 # build the webpage
-cd ~/CAB432/web
+cd /home/ubuntu/CAB432/web
 npm i
 npm run build
-mv -f ./dist ../api/public
+rm -r /home/ubuntu/CAB432/api/public
+mv /home/ubuntu/CAB432/web/dist ~/CAB432/api/public
 
 # systemd
-cd ~/CAB432/deploy
-sudo cp ./squash.service /etc/systemd/system/squash.service
+sudo cp /home/ubuntu/CAB432/deploy/squash.service /etc/systemd/system/squash.service
+cd /home/ubuntu/CAB432/api
 sudo systemctl daemon-reload
 sudo systemctl enable squash
 sudo systemctl start squash

@@ -7,7 +7,7 @@ ExecStart=/home/ubuntu/.nvm/versions/node/v20.15.1/bin/node /home/ubuntu/CAB432/
 Restart=always
 User=ubuntu
 Environment=NODE_ENV=production
-WorkingDirectory=/home/ubuntu/CAB432
+WorkingDirectory=/home/ubuntu/CAB432/api
 
 [Install]
 WantedBy=multi-user.target
