@@ -19,7 +19,7 @@ Overview
 - **Application name:** Squash
 - **Two line description:**  Squash is a video compression platform.
 It can compress the video users uploaded and keep the compression history for different users.
-- **EC2 instance name or ID:** 
+- **EC2 instance name or ID:** i-0930b8e94366c0e20
 
 Core criteria
 ------------------------------------------------
@@ -32,7 +32,7 @@ Core criteria
 - **Why is are the other services used not suitable for this data?:** 
 Other data storage services may lack the scalability, durability, and low-latency retrieval that Amazon S3 provides, making them less ideal for storing and serving large video files efficiently.
 - **Bucket/instance/table name:** squash-assess2
-- **Video timestamp:**
+- **Video timestamp:** 03:05
 - **Relevant files:**
     - /api/util/s3.js
     - /api/controller/videoController.js
@@ -43,7 +43,7 @@ Other data storage services may lack the scalability, durability, and low-latenc
 - **What data is being stored?:** video compress history
 - **Why is this service suited to this data?:** RDS is ideal for storing compressed historical data because it provides managed relational database capabilities, ensuring data integrity, easy querying, and automated backups in a scalable and reliable environment.
 - **Why is are the other services used not suitable for this data?:** Other services may lack the relational structure, strong consistency, or efficient query capabilities needed for complex historical data analysis and management.
-- **Video timestamp:**
+- **Video timestamp:** 03:50
 - **Relevant files:**
     - /api/util/rds.js
     - /api/controller/videoController.js
@@ -54,14 +54,15 @@ Other data storage services may lack the scalability, durability, and low-latenc
 - **What data is being stored?:** video compression metadata
 - **Why is this service suited to this data?:** DocumentDB is well-suited for storing compression metadata because it efficiently handles semi-structured data, scales seamlessly, and provides flexible querying for document-based data models.
 - **Why is are the other services used not suitable for this data?:** Other services may not offer the same performance or flexibility when managing complex, nested metadata structures or lack the optimized handling of semi-structured data.
-- **Video timestamp:**
+- **Video timestamp:** 04:25
 - **Relevant files:**
-    -
+    - /api/util/mongo.js
+    - /api/controller/videoController.js
 
 ### S3 Pre-signed URLs
 
 - **S3 Bucket names:** squash-assess2
-- **Video timestamp:**
+- **Video timestamp:** 04:50
 - **Relevant files:**
     - /api/util/s3.js
     - /api/controller/videoController.js
@@ -71,7 +72,7 @@ Other data storage services may lack the scalability, durability, and low-latenc
 - **ElastiCache instance name:** squash-assess2
 - **What data is being cached?:** compression real-time progress
 - **Why is this data likely to be accessed frequently?:** the client will send polling requests to get the progress data, and the progress will also be written by the server side
-- **Video timestamp:**
+- **Video timestamp:** 05:00
 - **Relevant files:**
     - /api/utils/memcache.js
     - /api/controller/videoController.js
@@ -96,7 +97,7 @@ Other data storage services may lack the scalability, durability, and low-latenc
 
 - **User pool name:** squash-assess2
 - **How are authentication tokens handled by the client?:** Authentication tokens are handled by storing them in the browser's localStorage after a successful login.
-- **Video timestamp:**
+- **Video timestamp:** 00:25
 - **Relevant files:**
     - /api/controller/userController.js: 23, 43, 64
     - /api/middleware/auth.js
@@ -104,14 +105,14 @@ Other data storage services may lack the scalability, durability, and low-latenc
 ### Cognito multi-factor authentication
 
 - **What factors are used for authentication:** TOTP provided by Google Authenticator app
-- **Video timestamp:**
+- **Video timestamp:** 01:27
 - **Relevant files:**
     - /api/controller/userController.js: 64, 100, 115, 142
 
 ### Cognito federated identities
 
 - **Identity providers used:** Google
-- **Video timestamp:**
+- **Video timestamp:** 01:55
 - **Relevant files:**
     - /api/controller/userController.js: 170, 208
 
@@ -125,28 +126,28 @@ Other data storage services may lack the scalability, durability, and low-latenc
 ### Core - DNS with Route53
 
 - **Subdomain**:  squash.cab432.com
-- **Video timestamp:**
+- **Video timestamp:** 00:15
 
 
 ### Custom security groups
 
 - **Security group names:** SquashAss2AppSG, SquashAss2DBSG
 - **Services/instances using security groups:** SquashAss2AppSG for EC2, SquashAss2DBSG for RDS, ElastiCache and documentdb
-- **Video timestamp:**
+- **Video timestamp:** 05:43
 - **Relevant files:**
     - /deploy/cloudformation.yaml
 
 ### Parameter store
 
 - **Parameter names:** /assess2/squash/port, /assess2/squash/redirect_uri & /assess2/squash/s3
-- **Video timestamp:**
+- **Video timestamp:** 06:05
 - **Relevant files:**
     - /api/utils/parameterstore.js
 
 ### Secrets manager
 
 - **Secrets names:** /assess2/squash/secret
-- **Video timestamp:**
+- **Video timestamp:** 06:25
 - **Relevant files:**
     - /api/utils/secretmanager.js
 
@@ -154,7 +155,7 @@ Other data storage services may lack the scalability, durability, and low-latenc
 
 - **Technology used:** cloudformation
 - **Services deployed:** EC2, DocumentDB, RDS, ElastiCache and cognito
-- **Video timestamp:**
+- **Video timestamp:** 06:45
 - **Relevant files:**
     - /api/utils/cloudformation.yaml
 
