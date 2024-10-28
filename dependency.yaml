@@ -1,0 +1,24 @@
+# The dependency file is to launch all necessary local dependencies through docker-compose
+# It's not used for production purpose!
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    ports:
+      - "3306:3306"  # Default MySQL port
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persist MySQL data
+
+  memcache:
+    image: memcached:latest
+    container_name: memcache
+    ports:
+      - "11211:11211"  # Default Memcached port
+
+volumes:
+  mysql_data:
+
+
