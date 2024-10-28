@@ -13,4 +13,4 @@ clean-dep:
 	sudo docker compose -f $(DEP_FILE) down -v
 
 aws-sso:
-	aws configure sso
+	aws sso login
