@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A stack to run squash app for assessment3, including rds, elasticache, sqs, s3, parameter/secret and cognito
+Parameters:
+  VpcId:
+    Type: String
+    Description: "VPC for the whole app"
+    Default: vpc-007bab53289655834
+  DBSGId:
+    Type: String
+    Description: "Security group id for DB"
+    Default: sg-0682b86d12378ee7a
+  QUTUserName:
+    Type: String
+    Description: "QUT username"
+    Default: n11373466@qut.edu.au
+  Purpose:
+    Type: String
+    Description: "purpose for the stack"
+    Default: "Assessment 3"
+  ResourceName:
+    Type: String
+    Description: "S3/rds/sqs/cache/cognito resource name"
+    Default: "squash-assess3"
+  RDSAdmin:
+    Type: String
+    Description: "root user for RDS"
+    Default: admin
+  RDSPass:
+    Type: String
+    Description: "root pass for RDS"
+    Default: squashassess3
+
+
+Resources:
+  MyS3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref ResourceName
+      AccessControl: Private
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
+  ElastiCache:
+    Type : "AWS::ElastiCache::CacheCluster"
+    Properties:
+      ClusterName: "squash-assess3"
+      CacheNodeType: "cache.t4g.micro"
+      Engine: "memcached"
+      NumCacheNodes: 1
+      CacheSubnetGroupName: "cab432-private-subnets"
+      VpcSecurityGroupIds:
+      - !Ref DBSGId
+      Tags:
+      - Key: "qut-username"
+        Value: !Ref QUTUserName
+      - Key: "purpose"
+        Value: !Ref Purpose
+
+  MyUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref ResourceName
+      MfaConfiguration: OPTIONAL
+      EnabledMfas: 
+        - SOFTWARE_TOKEN_MFA
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      UserPoolTags:
+        qut-username: !Ref QUTUserName
+        purpose: !Ref Purpose
+  
+  MyUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref MyUserPool
+      Domain: !Ref ResourceName
+
+  MyUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Ref ResourceName
+      UserPoolId: !Ref MyUserPool
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      GenerateSecret: false
+      SupportedIdentityProviders: 
+        - "COGNITO"
+
+  MyRDS:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Ref ResourceName
+      Engine: "mysql"
+      EngineVersion: "8.0"
+      MasterUsername: !Ref RDSAdmin
+      MasterUserPassword: !Ref RDSPass
+      AllocatedStorage: 20
+      DBInstanceClass: db.t4g.micro
+      VPCSecurityGroups: 
+      - !Ref DBSGId
+      DBSubnetGroupName: default-vpc-007bab53289655834
+      BackupRetentionPeriod: 0
+      PubliclyAccessible: false
+      MultiAZ: false
+      # DBName: squash
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
+
+Outputs:
+  ElastiCacheEndpoint:
+    Description: "The endpoint of the ElastiCache cluster"
+    Value: !GetAtt ElastiCache.ConfigurationEndpoint.Address
+    Export:
+      Name: !Sub "${ResourceName}-ElastiCacheEndpoint"
+      
+  ElastiCachePort:
+    Description: "The port of the ElastiCache cluster"
+    Value: !GetAtt ElastiCache.ConfigurationEndpoint.Port
+    Export:
+      Name: !Sub "${ResourceName}-ElastiCachePort"
+
+  UserPoolId:
+    Description: "User pool ID of cognito"
+    Value: !GetAtt MyUserPool.UserPoolId
+    Export:
+      Name: !Sub "${ResourceName}-UserPoolId"  # Changed this line
+
+  UserPoolClientId:
+    Description: "app id of cognito user pool"
+    Value: !GetAtt MyUserPoolClient.ClientId
+    Export:
+      Name: !Sub "${ResourceName}-UserPoolClientId"
+
+  RDSEndpoint:
+    Description: "The endpoint of the MySQL RDS instance"
+    Value: !GetAtt MyRDS.Endpoint.Address
+    Export:
+      Name: !Sub "${ResourceName}-RDSEndpoint"
+
+  RDSPort:
+    Description: "The port of the MySQL RDS instance"
+    Value: !GetAtt MyRDS.Endpoint.Port
+    Export:
+      Name: !Sub "${ResourceName}-RDSPort"

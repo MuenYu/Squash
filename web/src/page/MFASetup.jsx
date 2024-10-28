@@ -58,7 +58,6 @@ const MFASetupPage = () => {
             <QRCodeSVG value={qrCodeData} size={200} />
           </div>
         )}
-        <p className="mb-4">Or enter this secret code manually: {secretCode}</p>
         <form onSubmit={handleVerify}>
           <div className="form-control">
             <label className="label">

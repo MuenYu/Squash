@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from "/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { login, register, confirmRegistration, verifyMFAChallenge, initiateGoogleSignIn } from "../api/requests";
+import { login, register, confirmRegistration, verifyMFAChallenge } from "../api/requests";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -14,15 +14,6 @@ const AuthPage = () => {
   const [requiresMFA, setRequiresMFA] = useState(false);
   const [mfaSession, setMfaSession] = useState('');
   const [mfaCode, setMfaCode] = useState('');
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await initiateGoogleSignIn();
-    } catch (error) {
-      console.error('Google Sign-In failed:', error);
-      alert('Unable to initiate Google Sign-In. Please try again.');
-    }
-  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -161,10 +152,6 @@ const AuthPage = () => {
             {isRegistering ? 'Register' : 'Login'}
           </button>
         </form>
-        <div className="divider">OR</div>
-        <button onClick={handleGoogleSignIn} className="btn btn-outline w-full mt-4">
-          Sign in with Google
-        </button>
       </>
     );
   };
