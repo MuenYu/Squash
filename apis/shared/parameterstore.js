@@ -1,7 +1,7 @@
 import SSM from "@aws-sdk/client-ssm"
-import { region, prefix } from "./const.js";
+import { region, prefix } from "./const.js"
 
-const client = new SSM.SSMClient({region: region})
+const client = new SSM.SSMClient({ region: region })
 
 /**
  * fetch the parameter from AWS parameter store
@@ -9,16 +9,18 @@ const client = new SSM.SSMClient({region: region})
  * @returns 
  */
 export async function getParameter(key) {
-    try {
-        const response = await client.send(
-           new SSM.GetParameterCommand({
-              Name: prefix
-           })
-        );
-        const parameters = JSON.parse(response.Parameter.Value)
-        return parameters[key]
-     } catch (error) {
-        console.log(error);
-        throw error
-     }
+   const envVal = process.env[key]
+   if (envVal) return envVal
+   try {
+      const response = await client.send(
+         new SSM.GetParameterCommand({
+            Name: prefix
+         })
+      )
+      const parameters = JSON.parse(response.Parameter.Value)
+      return parameters[key]
+   } catch (error) {
+      console.log(error)
+      throw error
+   }
 }
