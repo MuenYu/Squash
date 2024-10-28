@@ -11,3 +11,6 @@ stop-dep:
 # stop all dependencies and reset app
 clean-dep:
 	sudo docker compose -f $(DEP_FILE) down -v
+
+aws-sso:
+	aws configure sso
