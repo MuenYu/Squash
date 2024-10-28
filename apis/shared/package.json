@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.679.0",
+    "@aws-sdk/client-ssm": "^3.679.0",
     "uuid": "^10.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import SSM from "@aws-sdk/client-ssm"
-import { region, confPrefix } from "./const.js";
+import { region, prefix } from "./const.js";
 
 const client = new SSM.SSMClient({region: region})
 
@@ -12,10 +12,11 @@ export async function getParameter(key) {
     try {
         const response = await client.send(
            new SSM.GetParameterCommand({
-              Name: `${confPrefix}/${key}`
+              Name: prefix
            })
         );
-        return response.Parameter.Value;
+        const parameters = JSON.parse(response.Parameter.Value)
+        return parameters[key]
      } catch (error) {
         console.log(error);
         throw error
