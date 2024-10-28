@@ -1,5 +1,4 @@
-import { getUUID } from "../shared/index.js";
+import { getSecret, getParameter } from '../shared/index.js'
 
-for (let i = 0;i<100;++i) {
-    console.log(getUUID())
-}
+console.log(await getParameter('test'))
+console.log(await getSecret('test'))

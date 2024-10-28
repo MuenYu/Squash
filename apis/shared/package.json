@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "the common library for the whole project",
+  "main": "index.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
