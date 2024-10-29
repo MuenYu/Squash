@@ -8,7 +8,7 @@ CREATE TABLE videos (
     file_name VARCHAR(255) NOT NULL,
     original_name VARCHAR(255) NOT NULL,
     owner VARCHAR(255) NOT NULL,
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE history (
