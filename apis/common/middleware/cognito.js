@@ -1,4 +1,4 @@
-import { errBuilder,getParameter } from "../../shared/index.js"
+import { Err ,getParameter } from "../../shared/index.js"
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
 const verifier = CognitoJwtVerifier.create({
@@ -12,7 +12,7 @@ export async function credentialHandler(req, res, next) {
 
     try {
         if (!authHeader)
-            errBuilder(401, "No authentication token")
+            throw new Err(401, "No authentication token")
 
         const token = authHeader.split(" ")[1];
 

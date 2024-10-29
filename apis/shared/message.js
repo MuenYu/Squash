@@ -12,14 +12,9 @@ export function msgBuilder(msg, data) {
     }
 }
 
-class CustomErr extends Error {
+export class Err extends Error {
     constructor(code, msg) {
         super(msg)
         this.code = code
     }
 }
-
-export function errBuilder(code, msg) {
-    throw new CustomErr(code, msg)
-}
-
