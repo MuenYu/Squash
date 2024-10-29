@@ -29,6 +29,10 @@ Parameters:
     Type: String
     Description: "root pass for RDS"
     Default: squashassess3
+  QueueName:
+    Type: String
+    Description: Name of the SQS queue for video compression requests
+    Default: squashassess3
 
 
 Resources:
@@ -125,6 +129,42 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
+    
+  MyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref QueueName
+      # Longer visibility timeout for video processing
+      VisibilityTimeout: 900  # 15 minutes
+      # Keep messages for 4 days to handle potential processing delays
+      MessageRetentionPeriod: 345600
+      # Enable long polling to reduce costs
+      ReceiveMessageWaitTimeSeconds: 20
+      # Messages can be up to 256KB (max size for SQS)
+      MaximumMessageSize: 262144
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
+  MyQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: 
+        - !Ref MyQueue
+      PolicyDocument:
+        Statement:
+          - Sid: AllowLambdaAccess
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt MyQueue.Arn
 
 
 Outputs:
@@ -163,3 +203,11 @@ Outputs:
     Value: !GetAtt MyRDS.Endpoint.Port
     Export:
       Name: !Sub "${ResourceName}-RDSPort"
+  
+  QueueURL:
+    Description: URL of the Video Compression Queue
+    Value: !Ref MyQueue
+  
+  QueueARN:
+    Description: ARN of the Video Compression Queue
+    Value: !GetAtt MyQueue.Arn
