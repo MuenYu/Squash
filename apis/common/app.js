@@ -5,7 +5,8 @@ import cors from "cors"
 import { credentialHandler } from "./middleware/cognito.js"
 import { fetchHistory } from "./controller/history.js"
 import { fetchProgress } from "./controller/progress.js"
-import { downloadVideo } from "./controller/video.js"
+import { downloadVideo, uploadVideo } from "./controller/video.js"
+import { uploadHandler } from "./middleware/upload.js"
 
 // check dependencies
 try {
@@ -29,6 +30,7 @@ app.use(express.json())
 app.get('/history', fetchHistory)
 app.get('/progress/:taskId', fetchProgress)
 app.get('/video/:videoName', downloadVideo)
+app.post('/video', uploadHandler, uploadVideo)
 
 // general error handler
 app.use(errHandler)
