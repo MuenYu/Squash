@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --env-file=.env.dev app.js"
+    "dev": "nodemon --env-file=.env.dev app.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
