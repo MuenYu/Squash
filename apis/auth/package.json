@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "app.js"
+    "dev": "nodemon --env-file=.env.dev app.js"
   },
   "keywords": [],
   "author": "",

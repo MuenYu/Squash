@@ -6,7 +6,7 @@ export async function register({ username, password, email }) {
   if (!username || !password || !email) {
     throw new Error("Please fill all fields");
   }
-  const resp = await client.post("users/register", {
+  const resp = await client.post("register", {
     json: { username, password, email },
   });
   if (!resp.ok) {
@@ -21,7 +21,7 @@ export async function confirmRegistration(username, code) {
     throw new Error("Username and verification code are required");
   }
   try {
-    const resp = await client.post("users/confirm", {
+    const resp = await client.post("confirm", {
       json: { username, code },
     });
     if (!resp.ok) {
@@ -35,27 +35,28 @@ export async function confirmRegistration(username, code) {
   }
 }
 
-
 export async function login({ username, password }) {
-  console.log('Logging in user:', { username });
   if (!username || !password) {
     throw new Error("Username and password are required");
   }
-  const resp = await client.post("users/login", {
+  const resp = await client.post("login", {
     json: { username, password },
   });
   const respData = await resp.json();
   if (!resp.ok) {
     throw new Error(respData.msg || "Login failed");
   }
-  if (respData.challengeName === 'SOFTWARE_TOKEN_MFA') {
-    return { requiresMFA: true, session: respData.session, username };
+
+  const data = respData.data;
+
+  if (data.challengeName === 'SOFTWARE_TOKEN_MFA') {
+    return { requiresMFA: true, session: data.session, username };
   }
-  localStorage.setItem(authKey, respData.idToken);
-  localStorage.setItem('accessToken', respData.accessToken);
-  localStorage.setItem('refreshToken', respData.refreshToken);
+  localStorage.setItem(authKey, data.idToken);
+  localStorage.setItem('accessToken', data.accessToken);
+  localStorage.setItem('refreshToken', data.refreshToken);
   localStorage.setItem('username', username);
-  return { requiresMFA: false, mfaEnabled: respData.mfaEnabled };
+  return { requiresMFA: false, mfaEnabled: data.mfaEnabled };
 }
 
 function useAuthCheck(apiFunc) {
@@ -139,18 +140,18 @@ async function detailAPI(videoName) {
 export const detail = useAuthCheck(detailAPI);
 
 export async function setupMFA(accessToken) {
-  const resp = await client.post("users/setup-mfa", {
+  const resp = await client.post("setup-mfa", {
     json: { accessToken },
   });
   const respData = await resp.json();
   if (!resp.ok) {
     throw new Error(respData.msg || "MFA setup failed");
   }
-  return respData.secretCode;
+  return respData.data.secretCode;
 }
 
 export async function verifyMFA(accessToken, userCode) {
-  const resp = await client.post("users/verify-mfa", {
+  const resp = await client.post("verify-mfa", {
     json: { accessToken, userCode },
   });
   if (!resp.ok) {
@@ -160,42 +161,15 @@ export async function verifyMFA(accessToken, userCode) {
 }
 
 export async function verifyMFAChallenge({ username, session, mfaCode }) {
-  const resp = await client.post("users/verify-mfa-challenge", {
+  const resp = await client.post("verify-mfa-challenge", {
     json: { username, session, mfaCode },
   });
   const respData = await resp.json();
+  const data = respData.data;
   if (!resp.ok) {
     throw new Error(respData.msg || "MFA verification failed");
   }
-  localStorage.setItem(authKey, respData.idToken);
-  localStorage.setItem('accessToken', respData.accessToken);
-  localStorage.setItem('refreshToken', respData.refreshToken);
-}
-
-export async function exchangeGoogleToken(code) {
-  const resp = await client.post("users/google", { json: { code } });
-  const data = await resp.json();
-  if (!resp.ok) {
-    throw new Error(data.message || "Failed to authenticate with Google");
-  }
-  // Store tokens in localStorage
   localStorage.setItem(authKey, data.idToken);
   localStorage.setItem('accessToken', data.accessToken);
   localStorage.setItem('refreshToken', data.refreshToken);
-  return data;
 }
-
-export const initiateGoogleSignIn = async () => {
-  try {
-    const resp = await client.get("users/google-signin-url");
-    if (!resp.ok) {
-      const respData = await resp.json();
-      throw new Error(respData.msg || "Failed to initiate Google Sign-In");
-    }
-    const { url } = await resp.json();
-    window.location.href = url;
-  } catch (error) {
-    console.error('Failed to initiate Google Sign-In:', error);
-    throw error;
-  }
-};

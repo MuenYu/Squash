@@ -1,4 +1,5 @@
 import express from "express"
+import { errHandler } from "../shared/index.js"
 import morgan from "morgan"
 import cors from "cors"
 import { register, confirmRegistration } from "./controller/register.js"
