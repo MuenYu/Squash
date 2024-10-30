@@ -8,7 +8,7 @@ export async function downloadVideo(req, res, next) {
             file_name: req.params.videoName
         }).first()
         if (!video) throw new Err(404, 'the video does not exist')
-        const url = await getPresignedURL(`/compressed/${video.file_name}`)
+        const url = await getPresignedURL(`compressed/${video.file_name}`)
         res.json(msgBuilder(url))
     } catch (e) {
         next(e)
@@ -37,10 +37,12 @@ export async function uploadAndCompress(req, res, next) {
         })
         // add task to sqs
         await send({
-            file_name: s3key,
+            taskId: taskId,
+            s3: s3key,
             original_name: original_name,
             compression_level: level,
-            owner: owner
+            owner: owner,
+            ext: ext
         })
         // set the progress to 0
         await cache.set(taskId, 0)
@@ -68,15 +70,15 @@ export async function compress(req, res, next) {
         const ext = original_name.split('.').pop()
         const taskId = uuidv4()
         const s3key = `uploaded/${taskId}.${ext}`
-        // define the new task
-        const task = {
-            original_name: original_name,
-            file_name: s3key,
-            compression_level: level,
-            owner: owner
-        }
         // send task to sqs
-        await send(task)
+        await send({
+            taskId: taskId,
+            original_name: original_name,
+            s3: s3key,
+            compression_level: level,
+            owner: owner,
+            ext: ext
+        })
         // set the progress to 0
         await cache.set(taskId, 0)
         res.json(msgBuilder(taskId))
