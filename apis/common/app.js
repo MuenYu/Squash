@@ -18,6 +18,7 @@ try {
     process.exit(1)
 }
 
+const port = process.env.port ?? 3000
 // initial express app and apply middlewares
 const app = express()
 app.use(morgan('tiny'))
@@ -33,4 +34,4 @@ app.post('/videos/:videoName/compress', compress)
 
 // general error handler
 app.use(errHandler)
-app.listen(3000, () => console.log(`Server is running`));
+app.listen(port, () => console.log(`Server is running on ${port}`));

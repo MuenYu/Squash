@@ -6,6 +6,7 @@ import { register, confirmRegistration } from "./controller/register.js"
 import { login } from "./controller/login.js"
 import { setupMFA, verifyMFA, verifyMFAChallenge } from "./controller/mfa.js"
 
+const port = process.env.port ?? 3000
 // initial express app and apply middlewares
 const app = express()
 app.use(morgan('tiny'))
@@ -22,4 +23,4 @@ app.post("/verify-mfa-challenge", verifyMFAChallenge);
 
 // general error handler
 app.use(errHandler)
-app.listen(3000, () => console.log(`Server is running`));
+app.listen(port, () => console.log(`Server is running on ${port}`));
