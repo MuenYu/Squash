@@ -8,3 +8,4 @@ Environmental Variable always has the highest priority.
 | memcache | memcache url string | `.env`, `parameter store` |
 | userPoolId | user pool id for cognito | `.env`, `parameter store` |
 | clientId | client id for cognito | `.env`, `parameter store` |
+| sqsUrl | url for SQS | `.env`, `parameter store` |
