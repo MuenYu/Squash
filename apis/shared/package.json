@@ -9,6 +9,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.679.0",
     "@aws-sdk/client-secrets-manager": "^3.679.0",
+    "@aws-sdk/client-sqs": "^3.682.0",
     "@aws-sdk/client-ssm": "^3.679.0",
     "@aws-sdk/s3-request-presigner": "^3.679.0",
     "knex": "^3.1.0",

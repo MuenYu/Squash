@@ -4,8 +4,7 @@ import morgan from "morgan"
 import cors from "cors"
 import { credentialHandler } from "./middleware/cognito.js"
 import { fetchHistory } from "./controller/history.js"
-import { fetchProgress } from "./controller/progress.js"
-import { downloadVideo, uploadVideo } from "./controller/video.js"
+import { downloadVideo, uploadAndCompress, compress } from "./controller/video.js"
 import { uploadHandler } from "./middleware/upload.js"
 
 // check dependencies
@@ -28,9 +27,9 @@ app.use(express.json())
 
 // router configuration
 app.get('/history', fetchHistory)
-app.get('/progress/:taskId', fetchProgress)
-app.get('/video/:videoName', downloadVideo)
-app.post('/video', uploadHandler, uploadVideo)
+app.get('/videos/:videoName', downloadVideo)
+app.post('/videos/compress', uploadHandler, uploadAndCompress)
+app.post('/videos/:videoName/compress', compress)
 
 // general error handler
 app.use(errHandler)
