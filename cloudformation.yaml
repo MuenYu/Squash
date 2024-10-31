@@ -144,6 +144,16 @@ Resources:
         - Key: "purpose"
           Value: !Ref Purpose
 
+  MyECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ResourceName
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
 Outputs:
   ElastiCacheEndpoint:
     Description: "The endpoint of the ElastiCache cluster"
@@ -185,6 +195,6 @@ Outputs:
     Description: URL of the Video Compression Queue
     Value: !Ref MyQueue
   
-  QueueARN:
-    Description: ARN of the Video Compression Queue
-    Value: !GetAtt MyQueue.Arn
+  ECSClusterName:
+    Description: The name of the ECS cluster
+    Value: !Ref MyECSCluster
