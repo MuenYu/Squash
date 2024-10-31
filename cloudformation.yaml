@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A stack to run squash app for assessment3, including rds, elasticache, sqs, s3, parameter/secret and cognito
 Parameters:
-  VpcId:
-    Type: String
-    Description: "VPC for the whole app"
-    Default: vpc-007bab53289655834
   DBSGId:
     Type: String
     Description: "Security group id for DB"
@@ -135,7 +131,7 @@ Resources:
     Properties:
       QueueName: !Ref QueueName
       # Longer visibility timeout for video processing
-      VisibilityTimeout: 900  # 15 minutes
+      VisibilityTimeout: 180  # 3 minutes
       # Keep messages for 4 days to handle potential processing delays
       MessageRetentionPeriod: 345600
       # Enable long polling to reduce costs
@@ -147,25 +143,6 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
-
-  MyQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      Queues: 
-        - !Ref MyQueue
-      PolicyDocument:
-        Statement:
-          - Sid: AllowLambdaAccess
-            Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action:
-              - sqs:SendMessage
-              - sqs:ReceiveMessage
-              - sqs:DeleteMessage
-              - sqs:GetQueueAttributes
-            Resource: !GetAtt MyQueue.Arn
-
 
 Outputs:
   ElastiCacheEndpoint:
