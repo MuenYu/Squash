@@ -4,7 +4,7 @@ import morgan from "morgan"
 import cors from "cors"
 import { credentialHandler } from "./middleware/cognito.js"
 import { fetchHistory } from "./controller/history.js"
-import { downloadVideo, uploadAndCompress, compress } from "./controller/video.js"
+import { downloadVideo, uploadAndCompress, compress, fetchUploadVideos } from "./controller/video.js"
 import { uploadHandler } from "./middleware/upload.js"
 
 // check dependencies
@@ -28,6 +28,7 @@ app.use(credentialHandler)
 
 // router configuration
 app.get('/api/common/history', fetchHistory)
+app.get('/api/common/videos', fetchUploadVideos)
 app.get('/api/common/videos/:videoName', downloadVideo)
 app.post('/api/common/videos/compress', uploadHandler, uploadAndCompress)
 app.post('/api/common/videos/:videoName/compress', compress)

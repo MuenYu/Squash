@@ -85,3 +85,17 @@ export async function compress(req, res, next) {
         next(e)
     }
 }
+
+export async function fetchUploadVideos(req, res, next) {
+    try {
+        const username = req.username
+        const data = await db('videos')
+            .select('file_name', 'original_name')
+            .where({
+                owner: username
+            })
+        res.json(msgBuilder(undefined, data))
+    } catch (e) {
+        next(e)
+    }
+}
