@@ -1,4 +1,4 @@
-import { db, del, put, receive } from "../shared/index.js"
+import { db, del, put, receive, get } from "../shared/index.js"
 import { compressVideo } from "./compress.js"
 import { stream2File, file2Stream, delFile } from "./path.js"
 import path from "path"
