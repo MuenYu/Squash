@@ -1,7 +1,7 @@
 import { IconSend } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useLoaderData } from "react-router-dom";
-import { initCompressionTask } from "../api/requests";
+import { uploadAndCompress, compressExisting } from "../api/requests";
 
 const SettingForm = () => {
   const { setStep, setTaskId } = useOutletContext();
@@ -17,7 +17,10 @@ const SettingForm = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    initCompressionTask(formData)
+    const videoFile = formData.get("videoFile");
+
+    if (videoFile?.size > 0) {
+      uploadAndCompress(formData)
       .then((taskId) => {
         setTaskId(taskId);
         navigate("/panel/compressing");
@@ -25,6 +28,17 @@ const SettingForm = () => {
       .catch((err) => {
         alert(err.message);
       });
+    }
+    else {
+      compressExisting(formData)
+      .then((taskId) => {
+        setTaskId(taskId);
+        navigate("/panel/compressing");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+    }
   };
 
   return (

@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { videoDownload } from "../api/requests";
 import { IconDownload, IconInfoCircle } from "@tabler/icons-react";
 import { useState } from "react";
-import DetailModal from "./DetailModal";
+// import DetailModal from "./DetailModal";
 
 const CompressedVideoList = ({ videoList }) => {
   const id = "detail-modal"
@@ -73,7 +73,7 @@ const CompressedVideoList = ({ videoList }) => {
           </tbody>
         </table>
       )}
-      <DetailModal id={id} fileName={fileName} />
+      {/* <DetailModal id={id} fileName={fileName} /> */}
     </>
   );
 };

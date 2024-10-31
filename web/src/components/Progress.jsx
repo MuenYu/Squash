@@ -1,32 +1,36 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { fetchProgress } from "../api/requests";
+// import { fetchProgress } from "../api/requests";
 
 const Progress = () => {
   const [progress, setProgress] = useState(0);
   const { setStep, taskId } = useOutletContext();
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   if (!taskId) navigate("/panel");
+  //   setStep(1);
+  //   const interval = setInterval(() => {
+  //     fetchProgress(taskId)
+  //       .then((p) => {
+  //         setProgress(p);
+  //         if (p >= 100) {
+  //           clearInterval(interval);
+  //           setTimeout(() => {
+  //             navigate("/panel/complete");
+  //           }, 1000);
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         alert(err.message);
+  //         navigate("/panel");
+  //       });
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
   useEffect(() => {
-    if (!taskId) navigate("/panel");
-    setStep(1);
-    const interval = setInterval(() => {
-      fetchProgress(taskId)
-        .then((p) => {
-          setProgress(p);
-          if (p >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-              navigate("/panel/complete");
-            }, 1000);
-          }
-        })
-        .catch((err) => {
-          alert(err.message);
-          navigate("/panel");
-        });
-    }, 1000);
-    return () => clearInterval(interval);
+    navigate("/panel");
   }, []);
 
   return (
