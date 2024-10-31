@@ -53,3 +53,15 @@ build-compression:
 # push common to docker hub
 push-compression:
 	sudo docker push $(DOCKERHUB_USER)/squash_compression:latest
+
+# build all images
+build-all:
+	make build-auth
+	make build-common
+	make build-compression
+
+# push all images
+push-all:
+	make push-auth
+	make push-common
+	make push-compression
