@@ -12,7 +12,7 @@ export function file2Stream(path) {
 
 export async function delFile(path) {
     try {
-        await fs.promises.unlink(path)
+        if (path) await fs.promises.unlink(path)
     } catch(e) {
         if (e.code!=='ENOENT')
             console.error(e)

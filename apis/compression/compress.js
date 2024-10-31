@@ -12,8 +12,9 @@ export async function compressVideo(src, dst, level, taskId) {
                 '-preset veryfast', // Encoding speed vs compression tradeoff
             ])
             .on('progress', async (progress) => {
-                if (!isNaN(progress.percent)) {
-                    await cache.set(taskId, Math.floor(progress.percent));
+                const percent = progress.percent
+                if (!isNaN(percent)) {
+                    await cache.set(taskId, Math.floor(percent));
                 }
             })
             .on('end', resolve)

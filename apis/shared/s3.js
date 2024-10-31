@@ -30,5 +30,9 @@ export async function get(key) {
         Key: key
     })
     const resp = await s3client.send(readCommand);
-    return resp.Body
+    const chunks = []
+    for await (const chunk of resp.Body) {
+        chunks.push(chunk)
+    }
+    return new Uint8Array(Buffer.concat(chunks))
 }

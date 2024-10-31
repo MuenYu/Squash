@@ -19,7 +19,7 @@ services:
       - "11211:11211"  # Default Memcached port
 
   auth:
-    image: parasomnia/squash_auth
+    image: parasomnia/squash_auth:latest
     container_name: squash_auth
     ports:
       - "3000:3000"
@@ -34,12 +34,24 @@ services:
       - memcache
 
   common:
-    image: parasomnia/squash_common
+    image: parasomnia/squash_common:latest
     container_name: squash_common
     ports:
       - "3001:3001"
     environment:
       port: 3001
+      rds: mysql://root@mysql:3306/squash?charset=utf8mb4
+      memcache: memcache:11211
+    volumes:
+      - /home/mashiro/.aws:/root/.aws:ro
+    depends_on:
+      - mysql
+      - memcache
+
+  compression:
+    image: parasomnia/squash_compression:latest
+    container_name: squash_compression
+    environment:
       rds: mysql://root@mysql:3306/squash?charset=utf8mb4
       memcache: memcache:11211
     volumes:

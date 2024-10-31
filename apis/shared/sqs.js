@@ -20,7 +20,7 @@ export async function receive() {
         MaxNumberOfMessages: 1,
         QueueUrl: sqsUrl,
         WaitTimeSeconds: 20,
-        VisibilityTimeout: 300,
+        VisibilityTimeout: 180,
     })
     const resp = await sqsClient.send(command)
     if (!resp?.Messages) return null

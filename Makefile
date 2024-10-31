@@ -43,5 +43,13 @@ build-common:
 	sudo docker build -f $(DOCKER_CONTEXT)/common/Dockerfile -t $(DOCKERHUB_USER)/squash_common:latest $(DOCKER_CONTEXT)
 
 # push common to docker hub
-push-auth:
+push-common:
 	sudo docker push $(DOCKERHUB_USER)/squash_common:latest
+
+# build common docker image
+build-compression:
+	sudo docker build -f $(DOCKER_CONTEXT)/compression/Dockerfile -t $(DOCKERHUB_USER)/squash_compression:latest $(DOCKER_CONTEXT)
+
+# push common to docker hub
+push-compression:
+	sudo docker push $(DOCKERHUB_USER)/squash_compression:latest
