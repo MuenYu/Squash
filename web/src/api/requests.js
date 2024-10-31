@@ -2,7 +2,6 @@ import { authKey, client } from "./const";
 import { redirect } from "react-router-dom";
 
 export async function register({ username, password, email }) {
-  console.log('Registering user:', { username, email });
   if (!username || !password || !email) {
     throw new Error("Please fill all fields");
   }
@@ -165,7 +164,7 @@ async function videoDownloadAPI(fileName) {
   if (!resp.ok) {
     throw new Error(respData.msg);
   }
-  return respData;
+  return respData.msg;
 }
 export const videoDownload = useAuthCheck(videoDownloadAPI);
 

@@ -18,6 +18,11 @@ const CompressedVideoList = ({ videoList }) => {
       });
   };
 
+  const compressionMap = new Map();
+  compressionMap.set('28', 'Low')
+  compressionMap.set('38', 'Medium')
+  compressionMap.set('48', 'High')
+
   return (
     <>
       <h1 className="font-medium mb-2">Your compressed videos:</h1>
@@ -48,9 +53,10 @@ const CompressedVideoList = ({ videoList }) => {
                       "yyyy-MM-dd HH:mm"
                     )}
                   </td>
-                  <td>{video.compression_level}</td>
+                  <td>{compressionMap.get(video.compression_level)}
+                  </td>
                   <td className="flex gap-2">
-                    <button
+                    {/* <button
                       className="btn btn-outline btn-primary btn-sm"
                       onClick={() => {
                         setfileName(video.file_name)
@@ -58,7 +64,7 @@ const CompressedVideoList = ({ videoList }) => {
                       }}
                     >
                       <IconInfoCircle stroke={1} />
-                    </button>
+                    </button> */}
                     <button
                       className="btn btn-outline btn-primary btn-sm"
                       onClick={() => {
