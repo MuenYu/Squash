@@ -68,7 +68,7 @@ export async function compress(req, res, next) {
         const original_name = video.original_name
         const ext = original_name.split('.').pop()
         const taskId = uuidv4()
-        const s3key = `uploaded/${taskId}.${ext}`
+        const s3key = `uploaded/${file_name}`
         // send task to sqs
         await send({
             taskId: taskId,
