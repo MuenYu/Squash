@@ -1,0 +1,53 @@
+# The dependency file is to launch all microservice locally with dependencies
+# It's not used for production purpose!
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    ports:
+      - "3306:3306"  # Default MySQL port
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persist MySQL data
+
+  memcache:
+    image: memcached:latest
+    container_name: memcache
+    ports:
+      - "11211:11211"  # Default Memcached port
+
+  auth:
+    image: parasomnia/squash_auth
+    container_name: squash_auth
+    ports:
+      - "3000:3000"
+    environment:
+      port: 3000
+      rds: mysql://root@mysql:3306/squash?charset=utf8mb4
+      memcache: memcache:11211
+    volumes:
+      - /home/mashiro/.aws:/root/.aws:ro
+    depends_on:
+      - mysql
+      - memcache
+
+  common:
+    image: parasomnia/squash_common
+    container_name: squash_common
+    ports:
+      - "3001:3001"
+    environment:
+      port: 3001
+      rds: mysql://root@mysql:3306/squash?charset=utf8mb4
+      memcache: memcache:11211
+    volumes:
+      - /home/mashiro/.aws:/root/.aws:ro
+    depends_on:
+      - mysql
+      - memcache
+
+volumes:
+  mysql_data:
+
