@@ -27,10 +27,10 @@ app.use(express.json())
 // app.use(credentialHandler)
 
 // router configuration
-app.get('/history', fetchHistory)
-app.get('/videos/:videoName', downloadVideo)
-app.post('/videos/compress', uploadHandler, uploadAndCompress)
-app.post('/videos/:videoName/compress', compress)
+app.get('/api/common/history', fetchHistory)
+app.get('/api/common/videos/:videoName', downloadVideo)
+app.post('/api/common/videos/compress', uploadHandler, uploadAndCompress)
+app.post('/api/common/videos/:videoName/compress', compress)
 
 // general error handler
 app.use(errHandler)

@@ -14,12 +14,12 @@ app.use(cors())
 app.use(express.json())
 
 // router configuration
-app.post("/register", register);
-app.post("/confirm", confirmRegistration);
-app.post("/login", login);
-app.post("/setup-mfa", setupMFA);
-app.post("/verify-mfa", verifyMFA);
-app.post("/verify-mfa-challenge", verifyMFAChallenge);
+app.post("/api/auth/register", register);
+app.post("/api/auth/confirm", confirmRegistration);
+app.post("/api/auth/login", login);
+app.post("/api/auth/setup-mfa", setupMFA);
+app.post("/api/auth/verify-mfa", verifyMFA);
+app.post("/api/auth/verify-mfa-challenge", verifyMFAChallenge);
 
 // general error handler
 app.use(errHandler)
