@@ -24,7 +24,7 @@ const app = express()
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(express.json())
-// app.use(credentialHandler)
+app.use(credentialHandler)
 
 // router configuration
 app.get('/api/common/history', fetchHistory)

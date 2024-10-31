@@ -17,8 +17,7 @@ export async function downloadVideo(req, res, next) {
 
 export async function uploadAndCompress(req, res, next) {
     try {
-        // TODO: remove the default username
-        const owner = req.username ?? 'unknown'
+        const owner = req.username
         const file = req?.files?.videoFile
         const level = req.body.level ?? 38
         if (!file) throw new Err(400, 'bad request')
@@ -54,7 +53,7 @@ export async function uploadAndCompress(req, res, next) {
 
 export async function compress(req, res, next) {
     try {
-        const owner = req.username ?? 'unknown'
+        const owner = req.username
         const file_name = req.params.videoName
         const level = req.body.level ?? 38
         // find the video user uploaded
