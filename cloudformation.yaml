@@ -51,6 +51,17 @@ Resources:
         - Key: "purpose"
           Value: !Ref Purpose
 
+  # S3 for frontend
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: squash-assess3-frontend
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
   ElastiCache:
     Type : "AWS::ElastiCache::CacheCluster"
     Properties:
