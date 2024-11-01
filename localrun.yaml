@@ -19,7 +19,7 @@ services:
       - "11211:11211"  # Default Memcached port
 
   auth:
-    image: parasomnia/squash_auth:latest
+    image: 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash/auth:latest
     container_name: squash_auth
     ports:
       - "3000:3000"
@@ -34,7 +34,7 @@ services:
       - memcache
 
   common:
-    image: parasomnia/squash_common:latest
+    image: 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash/common:latest
     container_name: squash_common
     ports:
       - "3001:3001"
@@ -49,7 +49,7 @@ services:
       - memcache
 
   compression:
-    image: parasomnia/squash_compression:latest
+    image: 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash/compression:latest
     container_name: squash_compression
     environment:
       rds: mysql://root@mysql:3306/squash?charset=utf8mb4
@@ -61,7 +61,7 @@ services:
       - memcache
 
   progress:
-    image: parasomnia/squash_progress:latest
+    image: 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash/progress:latest
     ports:
       - "9000:8080"
     container_name: squash_progress

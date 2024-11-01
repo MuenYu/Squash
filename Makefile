@@ -1,6 +1,6 @@
 DEP_FILE = dependency.yaml
 SRV_FILE = localrun.yaml
-DOCKERHUB_USER = parasomnia
+REPO = 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash
 DOCKER_CONTEXT = ./apis
 
 # run all dependencies
@@ -19,10 +19,6 @@ clean-dep:
 aws-sso:
 	aws sso login
 
-# login to dockerhub
-hub-sso:
-	sudo docker login
-
 # run all micro services locally
 run-local:
 	sudo docker compose -f $(SRV_FILE) up -d
@@ -34,35 +30,35 @@ stop-local:
 
 # build auth docker image
 build-auth:
-	sudo docker build -f $(DOCKER_CONTEXT)/auth/Dockerfile -t $(DOCKERHUB_USER)/squash_auth:latest $(DOCKER_CONTEXT)
+	sudo docker build -f $(DOCKER_CONTEXT)/auth/Dockerfile -t $(REPO)/auth:latest $(DOCKER_CONTEXT)
 
 # push auth to docker hub
 push-auth:
-	sudo docker push $(DOCKERHUB_USER)/squash_auth:latest
+	sudo docker push $(REPO)/auth:latest
 
 # build common docker image
 build-common:
-	sudo docker build -f $(DOCKER_CONTEXT)/common/Dockerfile -t $(DOCKERHUB_USER)/squash_common:latest $(DOCKER_CONTEXT)
+	sudo docker build -f $(DOCKER_CONTEXT)/common/Dockerfile -t $(REPO)/common:latest $(DOCKER_CONTEXT)
 
 # push common to docker hub
 push-common:
-	sudo docker push $(DOCKERHUB_USER)/squash_common:latest
+	sudo docker push $(REPO)/common:latest
 
 # build common docker image
 build-compression:
-	sudo docker build -f $(DOCKER_CONTEXT)/compression/Dockerfile -t $(DOCKERHUB_USER)/squash_compression:latest $(DOCKER_CONTEXT)
+	sudo docker build -f $(DOCKER_CONTEXT)/compression/Dockerfile -t $(REPO)/compression:latest $(DOCKER_CONTEXT)
 
 # push common to docker hub
 push-compression:
-	sudo docker push $(DOCKERHUB_USER)/squash_compression:latest
+	sudo docker push $(REPO)/compression:latest
 
 # build progress to docker hub
 build-progress:
-	sudo docker build -f $(DOCKER_CONTEXT)/progress/Dockerfile -t $(DOCKERHUB_USER)/squash_progress:latest $(DOCKER_CONTEXT)
+	sudo docker build -f $(DOCKER_CONTEXT)/progress/Dockerfile -t $(REPO)/progress:latest $(DOCKER_CONTEXT)
 
 # push progress to docker hub
 push-progress:
-	sudo docker push $(DOCKERHUB_USER)/squash_progress:latest
+	sudo docker push $(REPO)/progress:latest
 
 # build all images
 build-all:
@@ -80,3 +76,6 @@ push-all:
 
 update-cf:
 	aws s3 cp cloudformation.yaml s3://n11457571-assess2-cloudformation/cloudformation.yaml
+
+ecr-sso:
+	aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com
