@@ -180,6 +180,79 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
+  
+  AuthTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${ResourceName}-auth
+      RequiresCompatibilities:
+        - FARGATE
+      RuntimePlatform:
+        OperatingSystemFamily: LINUX
+        CpuArchitecture: X86_64
+      NetworkMode: awsvpc
+      Cpu: '512'
+      Memory: '1024'
+      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
+      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
+      ContainerDefinitions:
+        - Name: auth
+          Image: parasomnia/squash_auth:latest
+          PortMappings:
+            - ContainerPort: 3000
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
+  CommonTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${ResourceName}-common
+      RequiresCompatibilities:
+        - FARGATE
+      RuntimePlatform:
+        OperatingSystemFamily: LINUX
+        CpuArchitecture: X86_64
+      NetworkMode: awsvpc
+      Cpu: '512'
+      Memory: '1024'
+      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
+      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
+      ContainerDefinitions:
+        - Name: common
+          Image: parasomnia/squash_common:latest
+          PortMappings:
+            - ContainerPort: 3001
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
+  CompressionTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${ResourceName}-compression
+      RequiresCompatibilities:
+        - FARGATE
+      RuntimePlatform:
+        OperatingSystemFamily: LINUX
+        CpuArchitecture: X86_64
+      NetworkMode: awsvpc
+      Cpu: '2048'
+      Memory: '4096'
+      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
+      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
+      ContainerDefinitions:
+        - Name: compression
+          Image: parasomnia/squash_compression:latest
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
 
 Outputs:
   ElastiCacheEndpoint:
