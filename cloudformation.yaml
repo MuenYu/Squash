@@ -1,6 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A stack to run squash app for assessment3, including rds, elasticache, sqs, s3, parameter/secret and cognito
 Parameters:
+  CertArn:
+    Type: String
+    Description: "Certification ARN"
+    Default: arn:aws:acm:ap-southeast-2:901444280953:certificate/5a753201-37ab-4a1b-8868-0a1a4a807661
+  LBSGId:
+    Type: String
+    Description: "Security group id for LB"
+    Default: sg-02ab87fa0b15fd3ba
   DBSGId:
     Type: String
     Description: "Security group id for DB"
@@ -119,7 +127,6 @@ Resources:
       BackupRetentionPeriod: 0
       PubliclyAccessible: false
       MultiAZ: false
-      # DBName: squash
       Tags:
         - Key: "qut-username"
           Value: !Ref QUTUserName
@@ -154,42 +161,50 @@ Resources:
         - Key: "purpose"
           Value: !Ref Purpose
 
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: MyAppLoadBalancer
+      Scheme: internal
+      Subnets:
+        - subnet-04cc288ea3b2e1e53
+        - subnet-08e89ff0d9b49c9ae
+        - subnet-05d0352bb15852524
+      SecurityGroups:
+        - !Ref LBSGId
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
+
 Outputs:
   ElastiCacheEndpoint:
     Description: "The endpoint of the ElastiCache cluster"
     Value: !GetAtt ElastiCache.ConfigurationEndpoint.Address
-    Export:
-      Name: !Sub "${ResourceName}-ElastiCacheEndpoint"
       
   ElastiCachePort:
     Description: "The port of the ElastiCache cluster"
     Value: !GetAtt ElastiCache.ConfigurationEndpoint.Port
-    Export:
-      Name: !Sub "${ResourceName}-ElastiCachePort"
 
   UserPoolId:
     Description: "User pool ID of cognito"
     Value: !GetAtt MyUserPool.UserPoolId
-    Export:
-      Name: !Sub "${ResourceName}-UserPoolId"  # Changed this line
 
   UserPoolClientId:
     Description: "app id of cognito user pool"
     Value: !GetAtt MyUserPoolClient.ClientId
-    Export:
-      Name: !Sub "${ResourceName}-UserPoolClientId"
 
   RDSEndpoint:
     Description: "The endpoint of the MySQL RDS instance"
     Value: !GetAtt MyRDS.Endpoint.Address
-    Export:
-      Name: !Sub "${ResourceName}-RDSEndpoint"
 
   RDSPort:
     Description: "The port of the MySQL RDS instance"
     Value: !GetAtt MyRDS.Endpoint.Port
-    Export:
-      Name: !Sub "${ResourceName}-RDSPort"
   
   QueueURL:
     Description: URL of the Video Compression Queue
@@ -198,3 +213,7 @@ Outputs:
   ECSClusterName:
     Description: The name of the ECS cluster
     Value: !Ref MyECSCluster
+
+  LoadBalancerDNS:
+    Description: "The dns of ALB"
+    Value: !GetAtt LoadBalancer.DNSName

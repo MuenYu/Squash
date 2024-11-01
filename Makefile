@@ -77,3 +77,6 @@ push-all:
 	make push-common
 	make push-compression
 	make push-progress
+
+update-cf:
+	aws s3 cp cloudformation.yaml s3://n11457571-assess2-cloudformation/cloudformation.yaml
