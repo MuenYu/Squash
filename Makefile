@@ -25,10 +25,12 @@ hub-sso:
 
 # run all micro services locally
 run-local:
-	sudo docker compose -f $(SRV_FILE) up
+	sudo docker compose -f $(SRV_FILE) up -d
+	sudo service nginx start
 
 stop-local:
 	sudo docker compose -f $(SRV_FILE) down
+	sudo service nginx stop
 
 # build auth docker image
 build-auth:
@@ -54,14 +56,24 @@ build-compression:
 push-compression:
 	sudo docker push $(DOCKERHUB_USER)/squash_compression:latest
 
+# build progress to docker hub
+build-progress:
+	sudo docker build -f $(DOCKER_CONTEXT)/progress/Dockerfile -t $(DOCKERHUB_USER)/squash_progress:latest $(DOCKER_CONTEXT)
+
+# push progress to docker hub
+push-compression:
+	sudo docker push $(DOCKERHUB_USER)/squash_progress:latest
+
 # build all images
 build-all:
 	make build-auth
 	make build-common
 	make build-compression
+	make build-progress
 
 # push all images
 push-all:
 	make push-auth
 	make push-common
 	make push-compression
+	make build-progress
