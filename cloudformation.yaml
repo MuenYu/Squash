@@ -260,6 +260,75 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
+  
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            StatusCode: '404'
+            ContentType: text/plain
+            MessageBody: 'Not Found'
+
+  # Target Group for Auth Service
+  AuthTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${ResourceName}-auth-tg
+      Port: 3000
+      Protocol: HTTP
+      VpcId: vpc-007bab53289655834
+      TargetType: ip
+      HealthCheckPath: /api/auth  # Adjust based on your health check endpoint
+      HealthCheckIntervalSeconds: 30
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+
+  # Target Group for Common Service
+  CommonTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${ResourceName}-common-tg
+      Port: 3000
+      Protocol: HTTP
+      VpcId: vpc-007bab53289655834
+      TargetType: ip
+      HealthCheckPath: /api/common  # Adjust based on your health check endpoint
+      HealthCheckIntervalSeconds: 30
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+
+  # Listener Rule for Auth Service
+  AuthListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values: 
+            - /api/auth/*
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref AuthTargetGroup
+
+  # Listener Rule for Common Service
+  CommonListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 2
+      Conditions:
+        - Field: path-pattern
+          Values: 
+            - /api/common/*
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref CommonTargetGroup
 
 Outputs:
   ElastiCacheEndpoint:
