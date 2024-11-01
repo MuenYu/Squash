@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A stack to run squash app for assessment3, including rds, elasticache, sqs, s3, parameter/secret and cognito
 Parameters:
-  CertArn:
-    Type: String
-    Description: "Certification ARN"
-    Default: arn:aws:acm:ap-southeast-2:901444280953:certificate/5a753201-37ab-4a1b-8868-0a1a4a807661
   LBSGId:
     Type: String
     Description: "Security group id for LB"
