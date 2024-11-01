@@ -60,6 +60,16 @@ services:
       - mysql
       - memcache
 
+  progress:
+    image: parasomnia/squash_progress:latest
+    ports:
+      - "9000:8080"
+    container_name: squash_progress
+    environment:
+      memcache: memcache:11211
+    depends_on:
+      - memcache
+
 volumes:
   mysql_data:
 

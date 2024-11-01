@@ -61,7 +61,7 @@ build-progress:
 	sudo docker build -f $(DOCKER_CONTEXT)/progress/Dockerfile -t $(DOCKERHUB_USER)/squash_progress:latest $(DOCKER_CONTEXT)
 
 # push progress to docker hub
-push-compression:
+push-progress:
 	sudo docker push $(DOCKERHUB_USER)/squash_progress:latest
 
 # build all images
@@ -76,4 +76,4 @@ push-all:
 	make push-auth
 	make push-common
 	make push-compression
-	make build-progress
+	make push-progress
