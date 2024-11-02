@@ -76,23 +76,6 @@ function useAuthCheck(apiFunc) {
   };
 }
 
-// async function initCompressionTaskAPI(formData) {
-//   const videoFile = formData.get("videoFile");
-//   const videoName = formData.get("videoName").trim();
-
-//   if (videoFile?.size === 0 && videoName?.length === 0)
-//     throw new Error("Please upload or select a video to compress");
-//   const resp = await client.post("common/videos/compress", {
-//     body: formData,
-//   });
-//   const respData = await resp.json();
-//   if (!resp.ok) {
-//     throw new Error(respData.msg);
-//   }
-//   return respData.taskId;
-// }
-// export const initCompressionTask = useAuthCheck(initCompressionTaskAPI);
-
 async function uploadAndCompressAPI(formData) {
   const videoFile = formData.get("videoFile");
   if (!videoFile?.size) {
@@ -133,12 +116,12 @@ async function compressExistingAPI(formData) {
 export const compressExisting = useAuthCheck(compressExistingAPI);
 
 async function fetchProgressAPI(taskId) {
-  const resp = await client.get(`videos/progress/${taskId}`);
+  const resp = await client.get(`progress/${taskId}`);
   const respData = await resp.json();
   if (!resp.ok) {
     throw new Error(respData.msg);
   }
-  return respData.progress;
+  return respData.msg;
 }
 export const fetchProgress = useAuthCheck(fetchProgressAPI);
 
