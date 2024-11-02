@@ -74,8 +74,18 @@ push-all:
 	make push-compression
 	make push-progress
 
+# upload cloudformation yaml to s3
 update-cf:
 	aws s3 cp cloudformation.yaml s3://n11457571-assess2-cloudformation/cloudformation.yaml
 
+# login to ecr
 ecr-sso:
 	aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com
+
+# build web
+build-web:
+	cd web && npm run build
+
+# push web to s3
+push-web:
+	aws s3 cp ./web/dist s3://squash-assess3-frontend --recursive
