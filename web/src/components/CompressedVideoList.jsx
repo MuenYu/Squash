@@ -1,13 +1,8 @@
 import { DateTime } from "luxon";
 import { videoDownload } from "../api/requests";
-import { IconDownload, IconInfoCircle } from "@tabler/icons-react";
-import { useState } from "react";
-// import DetailModal from "./DetailModal";
+import { IconDownload } from "@tabler/icons-react";
 
 const CompressedVideoList = ({ videoList }) => {
-  const id = "detail-modal"
-  const [fileName, setfileName] = useState(null);
-
   const download = (fileName) => {
     videoDownload(fileName)
       .then((url) => {
@@ -18,10 +13,11 @@ const CompressedVideoList = ({ videoList }) => {
       });
   };
 
-  const compressionMap = new Map();
-  compressionMap.set('28', 'Low')
-  compressionMap.set('38', 'Medium')
-  compressionMap.set('48', 'High')
+  const compressionMap = {
+    '28': 'Low',
+    '38': 'Medium',
+    '48': 'High'
+  };
 
   return (
     <>
@@ -38,7 +34,7 @@ const CompressedVideoList = ({ videoList }) => {
               <th>Source Video Name</th>
               <th>Compression Finished Time</th>
               <th>Compression Level</th>
-              <th>Operation</th>
+              <th>Download</th>
             </tr>
           </thead>
           <tbody>
@@ -53,18 +49,9 @@ const CompressedVideoList = ({ videoList }) => {
                       "yyyy-MM-dd HH:mm"
                     )}
                   </td>
-                  <td>{compressionMap.get(video.compression_level)}
+                  <td>{compressionMap[video.compression_level]}
                   </td>
                   <td className="flex gap-2">
-                    {/* <button
-                      className="btn btn-outline btn-primary btn-sm"
-                      onClick={() => {
-                        setfileName(video.file_name)
-                        document.getElementById(id).showModal();
-                      }}
-                    >
-                      <IconInfoCircle stroke={1} />
-                    </button> */}
                     <button
                       className="btn btn-outline btn-primary btn-sm"
                       onClick={() => {
@@ -79,7 +66,6 @@ const CompressedVideoList = ({ videoList }) => {
           </tbody>
         </table>
       )}
-      {/* <DetailModal id={id} fileName={fileName} /> */}
     </>
   );
 };
