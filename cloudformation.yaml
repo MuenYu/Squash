@@ -158,25 +158,15 @@ Resources:
         - Key: "purpose"
           Value: !Ref Purpose
 
-  MyECSCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-      ClusterName: !Ref ResourceName
-      Tags:
-        - Key: "qut-username"
-          Value: !Ref QUTUserName
-        - Key: "purpose"
-          Value: !Ref Purpose
-
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: MyAppLoadBalancer
-      Scheme: internal
+      Name: SquashLB
+      Scheme: internet-facing
       Subnets:
-        - subnet-04cc288ea3b2e1e53
-        - subnet-08e89ff0d9b49c9ae
-        - subnet-05d0352bb15852524
+        - subnet-05a3b8177138c8b14
+        - subnet-075811427d5564cf9
+        - subnet-04ca053dcbe5f49cc
       SecurityGroups:
         - !Ref LBSGId
       LoadBalancerAttributes:
@@ -187,148 +177,6 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
-  
-  AuthTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: !Sub ${ResourceName}-auth
-      RequiresCompatibilities:
-        - FARGATE
-      NetworkMode: awsvpc
-      Cpu: '512'
-      Memory: '1024'
-      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
-      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
-      RuntimePlatform:
-        OperatingSystemFamily: LINUX
-        CpuArchitecture: X86_64
-      ContainerDefinitions:
-        - Name: auth
-          Image: parasomnia/squash_auth:latest
-          PortMappings:
-            - ContainerPort: 3000
-      Tags:
-        - Key: "qut-username"
-          Value: !Ref QUTUserName
-        - Key: "purpose"
-          Value: !Ref Purpose
-
-  CommonTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: !Sub ${ResourceName}-common
-      RequiresCompatibilities:
-        - FARGATE
-      NetworkMode: awsvpc
-      Cpu: '512'
-      Memory: '1024'
-      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
-      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
-      RuntimePlatform:
-        OperatingSystemFamily: LINUX
-        CpuArchitecture: X86_64
-      ContainerDefinitions:
-        - Name: common
-          Image: parasomnia/squash_common:latest
-          PortMappings:
-            - ContainerPort: 3001
-      Tags:
-        - Key: "qut-username"
-          Value: !Ref QUTUserName
-        - Key: "purpose"
-          Value: !Ref Purpose
-
-  CompressionTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: !Sub ${ResourceName}-compression
-      RequiresCompatibilities:
-        - FARGATE
-      NetworkMode: awsvpc
-      Cpu: '2048'
-      Memory: '4096'
-      TaskRoleArn: arn:aws:iam::901444280953:role/Task-Role-CAB432-ECS
-      ExecutionRoleArn: arn:aws:iam::901444280953:role/Execution-Role-CAB432-ECS
-      RuntimePlatform:
-        OperatingSystemFamily: LINUX
-        CpuArchitecture: X86_64
-      ContainerDefinitions:
-        - Name: compression
-          Image: parasomnia/squash_compression:latest
-      Tags:
-        - Key: "qut-username"
-          Value: !Ref QUTUserName
-        - Key: "purpose"
-          Value: !Ref Purpose
-  
-  LoadBalancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      LoadBalancerArn: !Ref LoadBalancer
-      Port: 80
-      Protocol: HTTP
-      DefaultActions:
-        - Type: fixed-response
-          FixedResponseConfig:
-            StatusCode: '404'
-            ContentType: text/plain
-            MessageBody: 'Not Found'
-
-  # Target Group for Auth Service
-  AuthTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Sub ${ResourceName}-auth-tg
-      Port: 3000
-      Protocol: HTTP
-      VpcId: vpc-007bab53289655834
-      TargetType: ip
-      HealthCheckPath: /api/auth  # Adjust based on your health check endpoint
-      HealthCheckIntervalSeconds: 30
-      HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 2
-
-  # Target Group for Common Service
-  CommonTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Sub ${ResourceName}-common-tg
-      Port: 3000
-      Protocol: HTTP
-      VpcId: vpc-007bab53289655834
-      TargetType: ip
-      HealthCheckPath: /api/common  # Adjust based on your health check endpoint
-      HealthCheckIntervalSeconds: 30
-      HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 2
-
-  # Listener Rule for Auth Service
-  AuthListenerRule:
-    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-    Properties:
-      ListenerArn: !Ref LoadBalancerListener
-      Priority: 1
-      Conditions:
-        - Field: path-pattern
-          Values: 
-            - /api/auth/*
-      Actions:
-        - Type: forward
-          TargetGroupArn: !Ref AuthTargetGroup
-
-  # Listener Rule for Common Service
-  CommonListenerRule:
-    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-    Properties:
-      ListenerArn: !Ref LoadBalancerListener
-      Priority: 2
-      Conditions:
-        - Field: path-pattern
-          Values: 
-            - /api/common/*
-      Actions:
-        - Type: forward
-          TargetGroupArn: !Ref CommonTargetGroup
 
 Outputs:
   ElastiCacheEndpoint:
@@ -358,10 +206,6 @@ Outputs:
   QueueURL:
     Description: URL of the Video Compression Queue
     Value: !Ref MyQueue
-  
-  ECSClusterName:
-    Description: The name of the ECS cluster
-    Value: !Ref MyECSCluster
 
   LoadBalancerDNS:
     Description: "The dns of ALB"
