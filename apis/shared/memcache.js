@@ -1,10 +1,10 @@
 import {
     MemcacheClient,
 } from "memcache-client";
-import { getSecret } from "./secretmanager.js"
+import { getParameter } from "./parameterstore.js";
 
 export const cache = new MemcacheClient({
-    server: await getSecret('memcache')
+    server: await getParameter('memcache')
 })
 
 export async function initMemcache() {
