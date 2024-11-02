@@ -20,10 +20,11 @@ const app = express()
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(express.json())
-app.use(credentialHandler)
 
 // router configuration
-app.get('/api/progress/:taskId', fetchProgress)
+app.get('/api/progress', (req,res)=>{res.json('ok')})
+app.get('/api/progress/:taskId', credentialHandler, fetchProgress)
+
 
 // general error handler
 app.use(errHandler)

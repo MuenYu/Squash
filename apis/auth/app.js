@@ -14,6 +14,7 @@ app.use(cors())
 app.use(express.json())
 
 // router configuration
+app.get("/api/auth",(req,res)=>{res.json('ok')})
 app.post("/api/auth/register", register);
 app.post("/api/auth/confirm", confirmRegistration);
 app.post("/api/auth/login", login);

@@ -24,14 +24,14 @@ const app = express()
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(express.json())
-app.use(credentialHandler)
 
 // router configuration
-app.get('/api/common/history', fetchHistory)
-app.get('/api/common/videos', fetchUploadVideos)
-app.get('/api/common/videos/:videoName', downloadVideo)
-app.post('/api/common/videos/compress', uploadHandler, uploadAndCompress)
-app.post('/api/common/videos/:videoName/compress', compress)
+app.get('/api/common', (req,res)=>{res.json('ok')})
+app.get('/api/common/history', credentialHandler, fetchHistory)
+app.get('/api/common/videos', credentialHandler, fetchUploadVideos)
+app.get('/api/common/videos/:videoName', credentialHandler, downloadVideo)
+app.post('/api/common/videos/compress', credentialHandler, uploadHandler, uploadAndCompress)
+app.post('/api/common/videos/:videoName/compress', credentialHandler, compress)
 
 // general error handler
 app.use(errHandler)
