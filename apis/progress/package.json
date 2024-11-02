@@ -1,15 +1,20 @@
 {
-  "name": "progress",
+  "name": "common",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --env-file=.env.dev app.mjs"
+    "dev": "nodemon --env-file=.env.dev app.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "memcache-client": "^1.0.5"
+    "aws-jwt-verify": "^4.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.7"
   }
 }

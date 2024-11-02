@@ -63,10 +63,13 @@ services:
   progress:
     image: 901444280953.dkr.ecr.ap-southeast-2.amazonaws.com/squash/progress:latest
     ports:
-      - "9000:8080"
+      - "3002:3002"
     container_name: squash_progress
     environment:
+      port: 3002
       memcache: memcache:11211
+    volumes:
+      - /home/mashiro/.aws:/root/.aws:ro
     depends_on:
       - memcache
 
