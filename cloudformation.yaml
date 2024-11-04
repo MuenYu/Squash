@@ -177,6 +177,16 @@ Resources:
           Value: !Ref QUTUserName
         - Key: "purpose"
           Value: !Ref Purpose
+  
+  MyECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ResourceName
+      Tags:
+        - Key: "qut-username"
+          Value: !Ref QUTUserName
+        - Key: "purpose"
+          Value: !Ref Purpose
 
 Outputs:
   ElastiCacheEndpoint:
