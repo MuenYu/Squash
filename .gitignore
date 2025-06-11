@@ -7,13 +7,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Build outputs
 dist
 dist-ssr
+build
+out
+.next
 *.local
-api/public
 
-# Editor directories and files
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Editor and OS files
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -24,19 +36,23 @@ api/public
 *.sln
 *.sw?
 
-# db
+# Local files
 test.sql
-
-# local attachment upload
+api/public
 api/upload
 api/output
+coverage
 
-# env files
-.env
-.env.*
+# Environment and secrets
+.env*
+*.pem
 
-# cert files
-global-bundle.pem
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
-# deploy
+# Vercel
+.vercel
+
+# Deployment
 # deploy/*.yaml
