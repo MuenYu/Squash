@@ -1,4 +1,10 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "404",
+  description: "Oops! The page you're looking for doesn't exist.",
+};
 
 const NotFoundPage: React.FC = () => {
   return (

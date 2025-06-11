@@ -1,5 +1,11 @@
 import Image from "next/image";
 import Link from 'next/link';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Intro",
+  description: "Introduction of Squash.",
+};
 
 export default function Home() {
   return (
