@@ -1,4 +1,3 @@
-import Progress from "@/components/Progress";
 import Steps from "@/components/Steps";
 import { Metadata } from "next";
 import Link from "next/link";
