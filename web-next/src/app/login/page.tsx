@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -18,29 +19,16 @@ const Login: React.FC = () => {
             <h2 className="text-2xl font-bold text-center">Login to Squash</h2>
           </div>
         </Link>
-        <form>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Username</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your username"
-              className="input input-bordered"
-            />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Password</span>
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="input input-bordered"
-            />
-          </div>
-          <div className="form-control mt-6">
-            <button className="btn btn-primary">Login</button>
+        <form
+          action={async () => {
+            "use server";
+            await signIn("google", {redirectTo: "/panel"});
+          }}
+        >
+          <div className="form-control mt-6 flex justify-center">
+            <button className="btn btn-primary" type="submit">
+              Signin with Google
+            </button>
           </div>
         </form>
       </div>
