@@ -11,3 +11,10 @@ stop-dep:
 # stop all dependencies and reset app
 clean-dep:
 	docker compose -f $(DEP_FILE) down -v
+
+# initiate db
+init-db:
+	npx prisma migrate dev --name init
+
+gen-db:
+	npx prisma generate
