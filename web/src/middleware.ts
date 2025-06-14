@@ -8,5 +8,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/panel/:path*", "/api/progress/:path*"],
+  matcher: ["/panel/:path*", "/api/progress/:path*", "/api/videos/:path*"],
 };

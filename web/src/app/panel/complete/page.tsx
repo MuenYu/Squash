@@ -8,7 +8,8 @@ export const metadata: Metadata = {
   description: "The video compression is complete.",
 };
 
-const SettingForm: React.FC = () => {
+const Result: React.FC = () => {
+
   return (
     <>
       <div className="flex justify-center mb-6">
@@ -27,4 +28,4 @@ const SettingForm: React.FC = () => {
   );
 };
 
-export default SettingForm;
+export default Result;
