@@ -18,3 +18,11 @@ init-db:
 
 gen-db:
 	npx prisma generate
+
+# reset dev environment, sleep is for waiting for db launching
+reset:
+	make stop-dep
+	make clean-dep
+	make run-dep
+	sleep 2
+	make init-db

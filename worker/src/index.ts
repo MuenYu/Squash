@@ -36,6 +36,7 @@ const worker = new Worker(
           owner: task.owner,
         },
       });
+      return id;
     } catch (e) {
       console.error("error", e);
     } finally {
@@ -47,11 +48,10 @@ const worker = new Worker(
   { connection }
 );
 
-worker.on("completed", async (job, id) => {
-  // remove task
+worker.on("completed", (job, id) => {
   setTimeout(async () => {
     await cache.del(id);
-  }, 3000);
+  }, 1000);
 });
 
 worker.on("error", (error: Error) => {
