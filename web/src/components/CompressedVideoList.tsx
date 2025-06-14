@@ -49,15 +49,25 @@ const CompressedVideoList: React.FC<{ list: RecordType[] }> = ({ list }) => {
                 <th>{index + 1}</th>
                 <td>{video.original_name}</td>
                 <td>
-                  {DateTime.fromJSDate(video.create_time).toFormat(
-                    "yyyy-MM-dd HH:mm"
-                  )}
+                  {typeof video.create_time === "string"
+                    ? DateTime.fromISO(video.create_time).toFormat(
+                        "yyyy-MM-dd HH:mm"
+                      )
+                    : DateTime.fromJSDate(video.create_time).toFormat(
+                        "yyyy-MM-dd HH:mm"
+                      )}
                 </td>
                 <td>{compressionMap[video.level]}</td>
                 <td className="flex gap-2">
                   <button
                     className="btn btn-outline btn-primary btn-sm"
-                    disabled
+                    onClick={() => {
+                      window.open(
+                        `/api/videos/${video.compressed_name}`,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }}
                   >
                     <IconDownload stroke={1} />
                   </button>
