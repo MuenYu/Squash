@@ -1,8 +1,13 @@
 import Steps from "@/components/Steps";
+import { upload2Origin } from "@/lib/minio";
 import { IconSend } from "@tabler/icons-react";
+import Mime from "mime";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
+import { auth } from "@/auth";
+import { addTask, Task } from "@/lib/queue";
+import { setProgress } from "@/lib/redis";
 
 export const metadata: Metadata = {
   title: "Compression Setting",
@@ -12,16 +17,30 @@ export const metadata: Metadata = {
 async function createCompressionTask(formData: FormData) {
   "use server";
 
-  const videoFile = formData.get("videoFile");
-  const level = formData.get("level");
+  const session = await auth();
+  const user = session!.user!.email as string;
+  const videoFile = formData.get("videoFile") as File;
+  const id = crypto.randomUUID();
+  const level = formData.get("level") as string;
+  const suffix = Mime.getExtension(videoFile.type);
 
-  console.log(videoFile, level)
-  // save the file to minio
-  // add record to postgresql
+  // save file to minio
+  const objectName = `${id}.${suffix}`;
+  const binary = await videoFile.arrayBuffer();
+  await upload2Origin(objectName, Buffer.from(binary));
+
   // add a task into queue
-  // redirect to progress page
+  const task: Task = {
+    originalName: objectName,
+    compressedName: `${id}-${level}.${suffix}`,
+    level: Number(level),
+    owner: user,
+  };
+  await addTask(task);
+  await setProgress(id, 0);
 
-  // redirect("/panel/compressing");
+  // redirect to progress page
+  redirect(`/panel/compressing/${id}`);
 }
 
 const SettingForm: React.FC = () => {
