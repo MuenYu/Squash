@@ -26,12 +26,8 @@ const SettingForm: React.FC<PageProps> = async ({ params }) => {
 
   return (
     <>
-      <div className="flex justify-center mb-6">
-        <Steps step={1} />
-      </div>
-      <div className="mb-6 flex flex-col items-center">
-        <Progress id={id} />
-      </div>
+      <Steps step={1} />
+      <Progress id={id} />
     </>
   );
 };
