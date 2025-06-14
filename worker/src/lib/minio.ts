@@ -7,4 +7,3 @@ export const minioClient = new minio.Client({
   accessKey: process.env.MINIO_KEY || "",
   secretKey: process.env.MINIO_SECRET || "",
 });
-

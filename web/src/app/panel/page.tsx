@@ -1,13 +1,13 @@
 import Steps from "@/components/Steps";
-import { upload2Origin } from "@/lib/minio";
+import { minioClient } from "@/lib/minio";
 import { IconSend } from "@tabler/icons-react";
 import Mime from "mime";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
 import { auth } from "@/auth";
-import { addTask, Task } from "@/lib/queue";
-import { setProgress } from "@/lib/redis";
+import { queue, Task } from "@/lib/queue";
+import { cache } from "@/lib/redis";
 
 export const metadata: Metadata = {
   title: "Compression Setting",
@@ -27,17 +27,17 @@ async function createCompressionTask(formData: FormData) {
   // save file to minio
   const objectName = `${id}.${suffix}`;
   const binary = await videoFile.arrayBuffer();
-  await upload2Origin(objectName, Buffer.from(binary));
+  await minioClient.putObject("origin", objectName, Buffer.from(binary));
 
   // add a task into queue
   const task: Task = {
-    originalName: objectName,
-    compressedName: `${id}-${level}.${suffix}`,
+    originalName: videoFile.name,
+    fileName: objectName,
     level: Number(level),
     owner: user,
   };
-  await addTask(task);
-  await setProgress(id, 0);
+  await queue.add(id, task);
+  await cache.set(id, 0);
 
   // redirect to progress page
   redirect(`/panel/compressing/${id}`);
@@ -84,10 +84,10 @@ const SettingForm: React.FC = () => {
               <input
                 name="level"
                 type="range"
-                min={28}
-                max={48}
+                min={1}
+                max={9}
                 className="range range-primary"
-                step={10}
+                step={4}
                 required
               />
               <div className="flex w-full justify-between px-2 text-xs">

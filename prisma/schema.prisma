@@ -9,6 +9,11 @@ generator client4NextJS {
   output   = "../web/generated/prisma"
 }
 
+generator client4Worker {
+  provider = "prisma-client-js"
+  output   = "../worker/generated/prisma"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
