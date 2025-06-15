@@ -1,4 +1,28 @@
 services:
+  web:
+    image: web:latest
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/squash
+      - MINIO_HOST=minio
+      - MINIO_PORT=9000
+      - MINIO_KEY=minioadmin
+      - MINIO_SECRET=minioadmin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+      - minio
+      - redis
+      - worker
+
   worker:
     image: worker:latest
     build:
